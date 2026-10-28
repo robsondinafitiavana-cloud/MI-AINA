@@ -1,0 +1,30 @@
+{% load static %}
+<div class="video-stage{% if call_eco %} eco{% endif %}" id="vStage"
+     data-call="{{ call_id|default:'' }}" data-eco="{{ call_eco|yesno:'1,0' }}"
+     data-role="{{ user.role|default:'' }}" data-end-url="/telemedicine/">
+  <video class="vc-remote" id="remoteVideo" autoplay playsinline></video>
+  <div class="vc-local-wrap">
+    <video class="vc-local" id="localVideo" autoplay muted playsinline></video>
+    <span class="vc-local-label">Vous</span>
+  </div>
+  <div class="vc-peer">
+    <div class="orb">{{ peer_initiales }}</div>
+    <div class="pe-name">{{ peer_nom }}<small>{{ peer_role }}</small></div>
+  </div>
+  {% if call_patient %}<div class="vc-case-context"><b>Dossier en cours · {{ call_patient }}</b>
+    {% if call_csb %}<small>{{ call_csb }}</small>{% endif %}
+    {% if call_motif %}<small>Motif : {{ call_motif }}</small>{% endif %}
+    {% if call_symptomes %}<small>{{ call_symptomes }}</small>{% endif %}
+  </div>{% endif %}
+  <div class="vc-top">
+    <span class="vc-pill"><span class="rec"></span><span id="callTimer">00:00</span> · EN DIRECT</span>
+    <span class="vc-pill" id="netPill">{% if call_eco %}ÉCO · 240p · 3G{% else %}HD · 720p · 4G{% endif %}</span>
+  </div>
+  <div class="vc-status" id="vcStatus" role="status">En attente de connexion...</div>
+  <div class="vc-ctrls">
+    <button class="vc-btn on" id="vcMic"><i data-lucide="mic"></i></button>
+    <button class="vc-btn on" id="vcCam"><i data-lucide="video"></i></button>
+    <button class="vc-btn" id="vcEco"><i data-lucide="signal-low"></i></button>
+    <button class="vc-btn end" id="vcEnd"><i data-lucide="phone-off"></i></button>
+  </div>
+</div>

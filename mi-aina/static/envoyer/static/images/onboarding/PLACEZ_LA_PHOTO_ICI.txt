@@ -1,0 +1,2 @@
+Ce dossier doit contenir le fichier :  bg-training.jpg
+Voir INSTRUCTIONS.txt à la racine du zip pour le lien de téléchargement.

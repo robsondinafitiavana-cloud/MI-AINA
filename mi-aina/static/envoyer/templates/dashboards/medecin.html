@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mi-AINA · Espace Médecin{% endblock %}
+{% block favicon %}<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%23C1272D"/><path d="M32 16v32M16 32h32" stroke="white" stroke-width="7" stroke-linecap="round"/></svg>'>{% endblock %}
+{% block side_extra %}
+<div class="side-note warn"><i data-lucide="cpu-off"></i><span>Mode clinique — les capteurs IoT sont gérés par les agents. Les constantes arrivent directement dans les dossiers.</span></div>
+{% endblock %}
+
+{% block content %}
+{{ cases_json|json_script:"data-cases" }}
+{{ consults_json|json_script:"data-consults" }}
+{{ patients_json|json_script:"data-patients" }}
+{{ threads_json|json_script:"data-threads" }}
+{{ fils_json|json_script:"data-fils" }}
+{{ urls_json|json_script:"data-urls" }}
+{{ me_json|json_script:"data-me" }}
+{{ formation_json|json_script:"data-formation" }}
+{{ forum_json|json_script:"data-forum" }}
+
+<!-- ============ OVERVIEW ============ -->
+<section class="view" data-view="overview">
+  <header class="hero">
+    <div>
+      <p class="hero-kicker mono"><span class="flag"></span>TONGA SOA · RÉPUBLIQUE DE MADAGASIKARA · MINISTERAN'NY FAHASALAMAM-BAHOAKA</p>
+      <h1 id="greetTitle"></h1>
+      <p class="hero-sub" id="greetMsg"></p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn ghost" data-goto="formation"><i data-lucide="graduation-cap"></i>Former les agents</button>
+      <button class="btn role" id="takeNextBtn"><i data-lucide="inbox"></i>Prendre le cas suivant</button>
+    </div>
+  </header>
+
+  <section class="stats">
+    <button class="stat" data-goto="triage" style="--tone:#A31F24;--tint:rgba(193,39,45,.08)">
+      <div class="top"><span class="ic"><i data-lucide="inbox"></i></span><span class="delta" id="statTriageDelta">à traiter</span></div>
+      <div class="val" id="statTriageVal">0</div><div class="lbl">File d'expertise</div>
+      <div class="hint">Cas envoyés par les agents</div>
+    </button>
+    <button class="stat" data-goto="triage" style="--tone:#9A6A1F;--tint:rgba(154,106,31,.11)">
+      <div class="top"><span class="ic"><i data-lucide="siren"></i></span><span class="delta">priorité max</span></div>
+      <div class="val" id="statCritVal">0</div><div class="lbl">Cas critiques</div>
+      <div class="hint">SpO₂ basse ou détresse</div>
+    </button>
+    <button class="stat" data-goto="patients" style="--tone:#026630;--tint:rgba(0,126,58,.09)">
+      <div class="top"><span class="ic"><i data-lucide="users"></i></span><span class="delta">suivis</span></div>
+      <div class="val" id="statPatVal">0</div><div class="lbl">Patients</div>
+      <div class="hint">Dossiers sous votre responsabilité</div>
+    </button>
+    <button class="stat" data-goto="consults" style="--tone:#1C4030;--tint:rgba(28,64,48,.09)">
+      <div class="top"><span class="ic"><i data-lucide="stethoscope"></i></span><span class="delta">actives</span></div>
+      <div class="val" id="statConsVal">0</div><div class="lbl">Consultations en cours</div>
+      <div class="hint">Validées &amp; orientées incluses</div>
+    </button>
+  </section>
+
+  <section class="bento">
+    <div class="card">
+      <header><div><div class="card-title">Triage en direct</div><div class="card-sub">Les cas vieillissent en temps réel — les critiques d'abord</div></div>
+        <span class="see-all" data-goto="triage">Toute la file</span></header>
+      <div class="case-list" id="triagePreview"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card">
+        <header><div><div class="card-title">Cas en cours</div><div class="card-sub">Constantes reçues du terrain</div></div></header>
+        <div id="liveCase" style="padding:14px 18px 18px"></div>
+      </div>
+      <div class="card"><div class="iot-note">
+        <i data-lucide="cpu-off"></i>
+        <p><b>Menus IoT masqués.</b> Les boîtiers ESP32 appartiennent aux agents de première ligne. Ici, vous consultez : SpO₂, température et pouls remontés automatiquement dans chaque dossier.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="grid-row2">
+    <div class="card">
+      <header><div><div class="card-title">Activité de télé-expertise</div><div class="card-sub">14 derniers jours</div></div></header>
+      <div class="chart-box"><canvas id="chartActivity"></canvas></div>
+    </div>
+    <div class="card">
+      <header><div><div class="card-title">Orientation des patients</div><div class="card-sub">Répartition</div></div></header>
+      <div class="chart-box"><canvas id="chartOrient"></canvas></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ VUES SECONDAIRES ============ -->
+<section class="view" id="view-triage" data-view="triage" hidden></section>
+<section class="view" id="view-patients" data-view="patients" hidden></section>
+<section class="view" id="view-consults" data-view="consults" hidden></section>
+<section class="view" id="view-dossier" data-view="dossier" hidden></section>
+
+<section class="view" id="view-visio" data-view="visio" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Visioconsultation</h2>
+    <p class="vh-sub">Appelez un agent du même secteur ou contactez un médecin. Les conversations restent dans la Messagerie.</p></div></header>
+  <div class="visio-grid">
+    {% include "partials/telemedicine/_visio_stage.html" %}
+    <aside class="card visio-directory" id="visioDirectory">
+      <header class="visio-directory-head"><div><div class="card-title">Contacts du réseau</div>
+        <div class="card-sub" id="visioContactsCount">Médecins et agents de votre secteur</div></div></header>
+      <div class="visio-directory-filters">
+        <div class="visio-role-filters" id="visioRoleFilters">
+          <button type="button" class="pill on" data-visio-role="TOUS">Tous</button>
+          <button type="button" class="pill" data-visio-role="MEDECIN">Médecins</button>
+          <button type="button" class="pill" data-visio-role="PREMIERE_LIGNE">Première ligne</button>
+        </div>
+        <input id="visioContactQ" placeholder="Nom ou prénom" autocomplete="off">
+        <div class="visio-territory-filters">
+          <input id="visioContactRegion" placeholder="Région" autocomplete="off">
+          <input id="visioContactDistrict" placeholder="District" autocomplete="off">
+          <input id="visioContactCsb" placeholder="CSB" autocomplete="off">
+          <input id="visioContactHospital" placeholder="Hôpital / établissement" autocomplete="off">
+        </div>
+      </div>
+      <div class="visio-directory-results" id="visioContactResults">
+        <p class="visio-directory-empty">Chargement des contacts…</p>
+      </div>
+      <div class="visio-contact-detail" id="visioContactDetail" hidden></div>
+    </aside>
+  </div>
+</section>
+
+<section class="view" id="view-messagerie" data-view="messagerie" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Messagerie</h2>
+    <p class="vh-sub">Échangez avec les comptes Première Ligne, Médecin et Pilotage. Les conversations et pièces jointes sont enregistrées.</p></div></header>
+  <div class="grid-row2" style="grid-template-columns:1fr 1.6fr">
+    {% include "partials/messaging/_thread_list.html" %}
+    {% include "partials/messaging/_chat.html" %}
+  </div>
+</section>
+
+<!-- ============ FORMATION & PUBLICATIONS ============ -->
+<section class="view" id="view-formation" data-view="formation" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Formation &amp; publications</h2>
+    <p class="vh-sub">Vos publications sont poussées hors-ligne sur les terminaux des agents au prochain passage réseau.</p></div></header>
+
+  <div class="card" style="margin-bottom:14px">
+    <form id="pubForm" style="padding:16px 18px 18px">
+      <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <label style="height:42px;display:flex;align-items:center;gap:8px;background:var(--field);border:1px solid var(--line-strong);border-radius:9px;padding:0 10px;color:var(--ink-70)">
+          <i data-lucide="file-type-2" style="width:16px;height:16px"></i>
+          <select id="pubType" style="height:32px;background:transparent;border:0;padding:0 2px;font-family:var(--sans);font-size:13px;color:var(--ink);outline:none">
+            <option value="texte">Texte</option><option value="image">Image</option><option value="video">Vidéo</option>
+            <option value="pdf">Guide PDF</option><option value="protocole">Protocole</option>
+          </select>
+        </label>
+        <input id="pubTitle" placeholder="Titre de la publication…" required
+          style="flex:1;min-width:220px;height:42px;background:var(--field);border:1px solid var(--line-strong);border-radius:9px;padding:0 14px;font-family:var(--sans);font-size:13.5px;color:var(--ink);outline:none">
+      </div>
+      <textarea id="pubDesc" placeholder="Partagez un protocole, un retour d'expérience, les signes d'alarme à vérifier au CSB…" required
+        style="width:100%;min-height:74px;background:var(--field);border:1px solid var(--line-strong);border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:13px;color:var(--ink);resize:vertical;outline:none;box-sizing:border-box"></textarea>
+      <label class="btn ghost" style="width:max-content;cursor:pointer"><i data-lucide="paperclip"></i><span id="pubFileLabel">Joindre un média</span>
+        <input id="pubFile" type="file" accept="application/pdf,image/*,video/*" hidden></label>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--ink-50);display:flex;align-items:center;gap:6px"><i data-lucide="wifi-off" style="width:12px;height:12px"></i>Pensé hors-ligne : compressé pour la 2G</span>
+        <button type="submit" class="btn solid"><i data-lucide="send"></i>Publier aux agents</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <header><div><div class="card-title">Fil des publications</div><div class="card-sub" id="feedSub"></div></div>
+      <span class="pill-filters" id="feedFilters"></span></header>
+    <div id="pubFeed" style="padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</section>
+
+<section class="view" id="view-forum" data-view="forum" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Forum médical</h2>
+    <p class="vh-sub">Échanges entre Première Ligne, médecins et Pilotage. Tous les rôles autorisés peuvent participer.</p></div></header>
+  <section class="card forum-composer" id="medForumComposer"></section>
+  <div class="forum-section" id="forumBox"></div>
+</section>
+
+{% include "accounts/_profile_compte.html" %}
+
+{% include "partials/consultations/_modal_ordonnance.html" %}
+{% include "partials/consultations/_modal_orientation.html" %}
+{% endblock %}
+
+{% block page_js %}
+<script src="{% static 'js/telemedicine/visio-stage.js' %}"></script>
+<script src="{% static 'js/dashboards/medecin/core.js' %}"></script>
+<script src="{% static 'js/dashboards/shared_patient_dossier.js' %}"></script>
+<script src="{% static 'js/dashboards/agent/forum.js' %}"></script>
+{% endblock %}

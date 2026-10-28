@@ -1,0 +1,17 @@
+{# Le formulaire CSB est chargé depuis le dashboard Pilotage. #}
+<div class="modal-wrap" id="csbModal" hidden>
+  <div class="modal">
+    <div class="modal-head"><b>Nouveau centre de santé (CSB)</b>
+      <button data-close aria-label="Fermer"><i data-lucide="x"></i></button></div>
+    <form class="modal-body" id="csbForm">
+      <div class="f-group"><label for="fCode">Code CSB *</label><input id="fCode" placeholder="CSB1XX" required></div>
+      <div class="f-group"><label for="fNom">Nom du centre *</label><input id="fNom" placeholder="CSB Ambohimanarina" required></div>
+      <div class="f-group"><label for="fDistrict">District *</label><input id="fDistrict" placeholder="Antananarivo Renivohitra" required></div>
+      <div class="f-group" style="margin-bottom:2px"><label for="fRegion">Région *</label><input id="fRegion" placeholder="Analamanga" required></div>
+      <div class="modal-foot">
+        <button type="button" class="btn ghost" data-close>Annuler</button>
+        <button type="submit" class="btn solid"><i data-lucide="building-2"></i>Créer le CSB</button>
+      </div>
+    </form>
+  </div>
+</div>

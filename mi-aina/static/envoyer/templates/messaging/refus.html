@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Mi-AINA · Accès refusé{% endblock %}
+{% block content %}
+<section class="view">
+  <div class="card" style="padding:34px 26px;text-align:center">
+    <div class="empty-ic"><i data-lucide="shield-alert"></i></div>
+    <h3>Accès refusé</h3>
+    <p style="color:var(--ink-50);font-size:12.5px">Vous ne participez pas à cette conversation.</p>
+    <a class="btn ghost" href="{% url 'msg_boite' %}" style="margin-top:14px"><i data-lucide="arrow-left"></i>Mes conversations</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Mi-AINA · Nouvelle conversation{% endblock %}
+{% block content %}
+<section class="view">
+  <header class="view-head"><div>
+    <h2 class="vh-title">Nouvelle conversation</h2>
+    <p class="vh-sub">Choisissez un correspondant parmi les comptes actifs, puis écrivez votre message.</p>
+  </div><a class="btn ghost" href="{% url 'msg_boite' %}"><i data-lucide="arrow-left"></i>Retour</a></header>
+
+  <div class="card" style="max-width:680px">
+    <form method="post" style="padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="f-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+          {{ field }}
+          {% for e in field.errors %}<span style="font-size:11.5px;color:var(--mg-red)">{{ e }}</span>{% endfor %}
+        </div>
+      {% endfor %}
+      <div style="display:flex;justify-content:flex-end;gap:10px">
+        <a class="btn ghost" href="{% url 'msg_boite' %}">Annuler</a>
+        <button type="submit" class="btn solid"><i data-lucide="send"></i>Envoyer</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

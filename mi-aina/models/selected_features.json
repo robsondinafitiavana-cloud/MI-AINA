@@ -1,0 +1,569 @@
+{
+  "features": [
+    "age",
+    "sex",
+    "temperature_c",
+    "heart_rate_bpm",
+    "oxygen_saturation",
+    "fever",
+    "chills",
+    "night_sweats",
+    "fatigue",
+    "malaise",
+    "weakness",
+    "lethargy",
+    "feeding_difficulty",
+    "loss_of_appetite",
+    "dehydration",
+    "lymphadenopathy",
+    "weight_loss",
+    "cough",
+    "dry_cough",
+    "productive_cough",
+    "hemoptysis",
+    "sore_throat",
+    "nasal_congestion",
+    "runny_nose",
+    "sneezing",
+    "shortness_of_breath",
+    "wheezing",
+    "rapid_breathing",
+    "shallow_breathing",
+    "stridor",
+    "apnea_episodes",
+    "cyanosis",
+    "chest_pain",
+    "chest_pressure",
+    "nausea",
+    "vomiting",
+    "diarrhea",
+    "constipation",
+    "abdominal_pain",
+    "abdominal_cramps",
+    "blood_in_stool",
+    "jaundice",
+    "dark_urine",
+    "headache",
+    "confusion",
+    "seizure",
+    "stiff_neck",
+    "loss_of_consciousness",
+    "numbness",
+    "difficulty_speaking",
+    "difficulty_walking",
+    "vision_changes",
+    "sudden_weakness",
+    "one_sided_weakness",
+    "skin_rash",
+    "itching",
+    "bruising_easily",
+    "petechiae",
+    "purpura",
+    "unusual_bleeding",
+    "prolonged_bleeding",
+    "bleeding_gums",
+    "red_eyes",
+    "painful_urination",
+    "frequent_urination",
+    "blood_in_urine",
+    "low_urine_output",
+    "flank_pain",
+    "palpitations",
+    "irregular_heartbeat",
+    "fainting",
+    "syncope",
+    "leg_swelling",
+    "ankle_swelling",
+    "joint_pain",
+    "joint_swelling",
+    "muscle_pain",
+    "back_pain"
+  ],
+  "categorical_features": [
+    "sex"
+  ],
+  "categories": {
+    "sex": [
+      "F",
+      "M"
+    ]
+  },
+  "numeric_medians": {
+    "age": 47.0,
+    "temperature_c": 37.1,
+    "heart_rate_bpm": 78.0,
+    "oxygen_saturation": 97.0,
+    "fever": 0.0,
+    "chills": 0.0,
+    "night_sweats": 0.0,
+    "fatigue": 0.0,
+    "malaise": 0.0,
+    "weakness": 0.0,
+    "lethargy": 0.0,
+    "feeding_difficulty": 0.0,
+    "loss_of_appetite": 0.0,
+    "dehydration": 0.0,
+    "lymphadenopathy": 0.0,
+    "weight_loss": 0.0,
+    "cough": 0.0,
+    "dry_cough": 0.0,
+    "productive_cough": 0.0,
+    "hemoptysis": 0.0,
+    "sore_throat": 0.0,
+    "nasal_congestion": 0.0,
+    "runny_nose": 0.0,
+    "sneezing": 0.0,
+    "shortness_of_breath": 0.0,
+    "wheezing": 0.0,
+    "rapid_breathing": 0.0,
+    "shallow_breathing": 0.0,
+    "stridor": 0.0,
+    "apnea_episodes": 0.0,
+    "cyanosis": 0.0,
+    "chest_pain": 0.0,
+    "chest_pressure": 0.0,
+    "nausea": 0.0,
+    "vomiting": 0.0,
+    "diarrhea": 0.0,
+    "constipation": 0.0,
+    "abdominal_pain": 0.0,
+    "abdominal_cramps": 0.0,
+    "blood_in_stool": 0.0,
+    "jaundice": 0.0,
+    "dark_urine": 0.0,
+    "headache": 0.0,
+    "confusion": 0.0,
+    "seizure": 0.0,
+    "stiff_neck": 0.0,
+    "loss_of_consciousness": 0.0,
+    "numbness": 0.0,
+    "difficulty_speaking": 0.0,
+    "difficulty_walking": 0.0,
+    "vision_changes": 0.0,
+    "sudden_weakness": 0.0,
+    "one_sided_weakness": 0.0,
+    "skin_rash": 0.0,
+    "itching": 0.0,
+    "bruising_easily": 0.0,
+    "petechiae": 0.0,
+    "purpura": 0.0,
+    "unusual_bleeding": 0.0,
+    "prolonged_bleeding": 0.0,
+    "bleeding_gums": 0.0,
+    "red_eyes": 0.0,
+    "painful_urination": 0.0,
+    "frequent_urination": 0.0,
+    "blood_in_urine": 0.0,
+    "low_urine_output": 0.0,
+    "flank_pain": 0.0,
+    "palpitations": 0.0,
+    "irregular_heartbeat": 0.0,
+    "fainting": 0.0,
+    "syncope": 0.0,
+    "leg_swelling": 0.0,
+    "ankle_swelling": 0.0,
+    "joint_pain": 0.0,
+    "joint_swelling": 0.0,
+    "muscle_pain": 0.0,
+    "back_pain": 0.0
+  },
+  "transformed_features": [
+    "age",
+    "temperature_c",
+    "heart_rate_bpm",
+    "oxygen_saturation",
+    "fever",
+    "chills",
+    "night_sweats",
+    "fatigue",
+    "malaise",
+    "weakness",
+    "lethargy",
+    "feeding_difficulty",
+    "loss_of_appetite",
+    "dehydration",
+    "lymphadenopathy",
+    "weight_loss",
+    "cough",
+    "dry_cough",
+    "productive_cough",
+    "hemoptysis",
+    "sore_throat",
+    "nasal_congestion",
+    "runny_nose",
+    "sneezing",
+    "shortness_of_breath",
+    "wheezing",
+    "rapid_breathing",
+    "shallow_breathing",
+    "stridor",
+    "apnea_episodes",
+    "cyanosis",
+    "chest_pain",
+    "chest_pressure",
+    "nausea",
+    "vomiting",
+    "diarrhea",
+    "constipation",
+    "abdominal_pain",
+    "abdominal_cramps",
+    "blood_in_stool",
+    "jaundice",
+    "dark_urine",
+    "headache",
+    "confusion",
+    "seizure",
+    "stiff_neck",
+    "loss_of_consciousness",
+    "numbness",
+    "difficulty_speaking",
+    "difficulty_walking",
+    "vision_changes",
+    "sudden_weakness",
+    "one_sided_weakness",
+    "skin_rash",
+    "itching",
+    "bruising_easily",
+    "petechiae",
+    "purpura",
+    "unusual_bleeding",
+    "prolonged_bleeding",
+    "bleeding_gums",
+    "red_eyes",
+    "painful_urination",
+    "frequent_urination",
+    "blood_in_urine",
+    "low_urine_output",
+    "flank_pain",
+    "palpitations",
+    "irregular_heartbeat",
+    "fainting",
+    "syncope",
+    "leg_swelling",
+    "ankle_swelling",
+    "joint_pain",
+    "joint_swelling",
+    "muscle_pain",
+    "back_pain",
+    "sex_F",
+    "sex_M"
+  ],
+  "transformed_sources": [
+    [
+      "age",
+      null
+    ],
+    [
+      "temperature_c",
+      null
+    ],
+    [
+      "heart_rate_bpm",
+      null
+    ],
+    [
+      "oxygen_saturation",
+      null
+    ],
+    [
+      "fever",
+      null
+    ],
+    [
+      "chills",
+      null
+    ],
+    [
+      "night_sweats",
+      null
+    ],
+    [
+      "fatigue",
+      null
+    ],
+    [
+      "malaise",
+      null
+    ],
+    [
+      "weakness",
+      null
+    ],
+    [
+      "lethargy",
+      null
+    ],
+    [
+      "feeding_difficulty",
+      null
+    ],
+    [
+      "loss_of_appetite",
+      null
+    ],
+    [
+      "dehydration",
+      null
+    ],
+    [
+      "lymphadenopathy",
+      null
+    ],
+    [
+      "weight_loss",
+      null
+    ],
+    [
+      "cough",
+      null
+    ],
+    [
+      "dry_cough",
+      null
+    ],
+    [
+      "productive_cough",
+      null
+    ],
+    [
+      "hemoptysis",
+      null
+    ],
+    [
+      "sore_throat",
+      null
+    ],
+    [
+      "nasal_congestion",
+      null
+    ],
+    [
+      "runny_nose",
+      null
+    ],
+    [
+      "sneezing",
+      null
+    ],
+    [
+      "shortness_of_breath",
+      null
+    ],
+    [
+      "wheezing",
+      null
+    ],
+    [
+      "rapid_breathing",
+      null
+    ],
+    [
+      "shallow_breathing",
+      null
+    ],
+    [
+      "stridor",
+      null
+    ],
+    [
+      "apnea_episodes",
+      null
+    ],
+    [
+      "cyanosis",
+      null
+    ],
+    [
+      "chest_pain",
+      null
+    ],
+    [
+      "chest_pressure",
+      null
+    ],
+    [
+      "nausea",
+      null
+    ],
+    [
+      "vomiting",
+      null
+    ],
+    [
+      "diarrhea",
+      null
+    ],
+    [
+      "constipation",
+      null
+    ],
+    [
+      "abdominal_pain",
+      null
+    ],
+    [
+      "abdominal_cramps",
+      null
+    ],
+    [
+      "blood_in_stool",
+      null
+    ],
+    [
+      "jaundice",
+      null
+    ],
+    [
+      "dark_urine",
+      null
+    ],
+    [
+      "headache",
+      null
+    ],
+    [
+      "confusion",
+      null
+    ],
+    [
+      "seizure",
+      null
+    ],
+    [
+      "stiff_neck",
+      null
+    ],
+    [
+      "loss_of_consciousness",
+      null
+    ],
+    [
+      "numbness",
+      null
+    ],
+    [
+      "difficulty_speaking",
+      null
+    ],
+    [
+      "difficulty_walking",
+      null
+    ],
+    [
+      "vision_changes",
+      null
+    ],
+    [
+      "sudden_weakness",
+      null
+    ],
+    [
+      "one_sided_weakness",
+      null
+    ],
+    [
+      "skin_rash",
+      null
+    ],
+    [
+      "itching",
+      null
+    ],
+    [
+      "bruising_easily",
+      null
+    ],
+    [
+      "petechiae",
+      null
+    ],
+    [
+      "purpura",
+      null
+    ],
+    [
+      "unusual_bleeding",
+      null
+    ],
+    [
+      "prolonged_bleeding",
+      null
+    ],
+    [
+      "bleeding_gums",
+      null
+    ],
+    [
+      "red_eyes",
+      null
+    ],
+    [
+      "painful_urination",
+      null
+    ],
+    [
+      "frequent_urination",
+      null
+    ],
+    [
+      "blood_in_urine",
+      null
+    ],
+    [
+      "low_urine_output",
+      null
+    ],
+    [
+      "flank_pain",
+      null
+    ],
+    [
+      "palpitations",
+      null
+    ],
+    [
+      "irregular_heartbeat",
+      null
+    ],
+    [
+      "fainting",
+      null
+    ],
+    [
+      "syncope",
+      null
+    ],
+    [
+      "leg_swelling",
+      null
+    ],
+    [
+      "ankle_swelling",
+      null
+    ],
+    [
+      "joint_pain",
+      null
+    ],
+    [
+      "joint_swelling",
+      null
+    ],
+    [
+      "muscle_pain",
+      null
+    ],
+    [
+      "back_pain",
+      null
+    ],
+    [
+      "sex",
+      "F"
+    ],
+    [
+      "sex",
+      "M"
+    ]
+  ]
+}

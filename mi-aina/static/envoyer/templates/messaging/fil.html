@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Mi-AINA · Conversation{% endblock %}
+{% block content %}
+<section class="view">
+  <header class="view-head"><div>
+    <h2 class="vh-title">{% if fil.titre %}{{ fil.titre }}{% else %}Conversation{% endif %}</h2>
+    <p class="vh-sub">
+      {% for a in autres %}{{ a.nom_court }} — {{ a.get_role_display }}{% if a.rattachement %} · {{ a.rattachement }}{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}
+    </p>
+  </div><a class="btn ghost" href="{% url 'msg_boite' %}"><i data-lucide="arrow-left"></i>Toutes les conversations</a></header>
+
+  <div class="card" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto">
+    {% for m in messages %}
+      <div style="align-self:{% if m.auteur_id == user.id %}flex-end{% else %}flex-start{% endif %};max-width:78%">
+        <div style="background:{% if m.auteur_id == user.id %}rgba(0,126,58,.10){% else %}var(--field){% endif %};border:1px solid var(--line);border-radius:12px;padding:10px 13px">
+          <div style="font-size:10px;color:var(--ink-50);margin-bottom:4px">
+            {{ m.auteur.nom_court }} · {{ m.auteur.get_role_display }} · {{ m.created_at|date:"d/m H:i" }}
+          </div>
+          <p style="font-size:13px;color:var(--ink);line-height:1.55;white-space:pre-wrap">{% if m.supprime %}Message supprimé{% else %}{{ m.texte }}{% endif %}</p>
+          {% if m.fichier and not m.supprime %}
+            <p style="margin-top:6px"><a href="{{ m.fichier.url }}" target="_blank" rel="noopener" style="font-size:12px">📎 {{ m.nom_fichier }}</a></p>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p style="color:var(--ink-50);font-size:12.5px;text-align:center;padding:20px">Aucun message — écrivez le premier ci-dessous.</p>
+    {% endfor %}
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <form method="post" enctype="multipart/form-data" style="padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px">
+      {% csrf_token %}
+      {{ form.texte }}
+      {% for e in form.texte.errors %}<span style="font-size:11.5px;color:var(--mg-red)">{{ e }}</span>{% endfor %}
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <label style="font-size:11.5px;color:var(--ink-50);display:flex;align-items:center;gap:8px">
+          <i data-lucide="paperclip" style="width:13px;height:13px"></i>Pièce jointe {{ form.piece }}</label>
+        <button type="submit" class="btn solid"><i data-lucide="send"></i>Envoyer</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

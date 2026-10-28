@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 310" fill="none">
+  <defs>
+    <linearGradient id="halo" x1="54" y1="20" x2="361" y2="278" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DFF3E7"/><stop offset="1" stop-color="#F4F1E9"/>
+    </linearGradient>
+    <linearGradient id="coat" x1="160" y1="92" x2="268" y2="276" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/><stop offset="1" stop-color="#EAF2EC"/>
+    </linearGradient>
+    <linearGradient id="scrub" x1="272" y1="150" x2="360" y2="283" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#16834E"/><stop offset="1" stop-color="#0C5135"/>
+    </linearGradient>
+    <filter id="shadow" x="22" y="31" width="400" height="270" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <ellipse cx="224" cy="268" rx="178" ry="19" fill="#1E2A22" opacity=".09" filter="url(#shadow)"/>
+  <path d="M220 18c84 0 153 60 153 134s-69 134-153 134S67 226 67 152 136 18 220 18Z" fill="url(#halo)"/>
+  <circle cx="220" cy="152" r="112" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 7"/>
+
+  <!-- Floating consultation and AI card -->
+  <g transform="rotate(-5 99 115)">
+    <rect x="28" y="62" width="127" height="91" rx="15" fill="#fff" stroke="#DCE7DE"/>
+    <circle cx="51" cy="86" r="12" fill="#E7F4EB"/>
+    <path d="M51 79v14m-7-7h14" stroke="#078043" stroke-width="2.4" stroke-linecap="round"/>
+    <rect x="71" y="80" width="59" height="6" rx="3" fill="#254233" opacity=".8"/>
+    <rect x="71" y="92" width="43" height="5" rx="2.5" fill="#254233" opacity=".22"/>
+    <path d="M43 128h16l7-10 9 17 9-12 7 5h27" stroke="#0B8B4B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="rotate(5 360 100)">
+    <rect x="321" y="57" width="91" height="63" rx="13" fill="#14281D"/>
+    <circle cx="342" cy="78" r="9" fill="#1E8C51"/>
+    <path d="m339 78 2 2 4-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="357" y="75" width="39" height="5" rx="2.5" fill="#fff" opacity=".8"/>
+    <rect x="340" y="96" width="55" height="5" rx="2.5" fill="#fff" opacity=".32"/>
+  </g>
+
+  <!-- Patient -->
+  <path d="M81 263c4-39 21-65 49-65s45 26 49 65H81Z" fill="#C1272D"/>
+  <path d="M106 205c1 13 8 21 24 21s23-8 24-21l-7-9h-34l-7 9Z" fill="#D58C66"/>
+  <ellipse cx="130" cy="160" rx="33" ry="39" fill="#8D543C"/>
+  <path d="M98 158c-2-25 11-43 34-43 20 0 33 14 32 39-8-2-15-8-21-17-10 12-25 19-45 21Z" fill="#25231F"/>
+  <path d="M116 161h2m24 0h2" stroke="#38251F" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M123 179c4 4 10 4 14 0" stroke="#713E31" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Clinician -->
+  <path d="M169 278c4-54 23-92 58-92s55 38 59 92H169Z" fill="url(#coat)" stroke="#DDE8DF" stroke-width="2"/>
+  <path d="m211 190 16 22 17-22 12 9-8 79h-43l-7-79 13-9Z" fill="#0A7F43"/>
+  <path d="m211 190 16 22-13 13-12-28 9-7Zm33 0-17 22 13 13 13-28-9-7Z" fill="#fff"/>
+  <path d="M226 212v33m-8-24h16" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <path d="M219 177c1 10 6 16 17 16s16-6 17-16l-5-8h-24l-5 8Z" fill="#B97554"/>
+  <ellipse cx="236" cy="139" rx="31" ry="37" fill="#B97554"/>
+  <path d="M205 141c-3-27 8-45 32-45 22 0 34 16 30 43-8-1-15-7-21-16-10 10-23 16-41 18Z" fill="#302722"/>
+  <path d="M222 142h2m23 0h2" stroke="#38251F" stroke-width="3.3" stroke-linecap="round"/>
+  <path d="M228 159c4 4 10 4 14 0" stroke="#7C4635" stroke-width="2.4" stroke-linecap="round"/>
+
+  <!-- Remote care signal -->
+  <path d="M307 207c7-9 16-9 23 0m-32-9c13-16 28-16 41 0m-50-9c19-23 41-23 60 0" stroke="#16834E" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+  <circle cx="330" cy="220" r="5" fill="#C1272D"/>
+  <circle cx="92" cy="191" r="5" fill="#D5A22E"/>
+</svg>

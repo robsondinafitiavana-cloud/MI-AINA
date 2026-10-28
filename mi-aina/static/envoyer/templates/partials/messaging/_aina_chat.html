@@ -1,0 +1,29 @@
+<div class="card chat" id="ainaCard">
+  <div class="chat-head" style="border-bottom:2px solid rgba(0,126,58,.25)">
+    <span style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;
+      background:linear-gradient(135deg,#007E3A,#1C4030);color:#fff">
+      <i data-lucide="sparkles" style="width:17px;height:17px"></i></span>
+    <div style="flex:1;min-width:0">
+      <b style="font-size:13px">AINA Assistant</b>
+      <div style="font-size:10.5px;color:#026630">🧠 IA médicale · texte, images (TDR…), PDF</div>
+    </div>
+    <button class="ci-btn" id="ainaReset" aria-label="Nouvelle discussion"><i data-lucide="rotate-ccw"></i></button>
+  </div>
+  <div class="chat-msgs" id="ainaMsgs">
+    <div class="msg them">Bonjour 👋 Je suis AINA, votre assistant médical.<br>
+      Posez une question, ou envoyez-moi une <b>photo de TDR</b>, une <b>ordonnance</b>, un <b>PDF</b> — je vous aide à les interpréter.<time>Mi-AINA IA</time></div>
+  </div>
+  <div class="chat-foot">
+    <div class="rec-bar" id="ainaFileBar" hidden style="display:flex;align-items:center;gap:9px;background:var(--field);border-radius:8px;padding:8px 12px;margin-bottom:8px">
+      <i data-lucide="paperclip" style="width:14px;height:14px;color:var(--amber)"></i>
+      <span id="ainaFilePreview" style="flex:1;font-size:11.5px;color:var(--ink-70)"></span>
+      <button type="button" id="ainaFileCancel" style="color:var(--ink-50)"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+    </div>
+    <form class="chat-input" id="ainaForm" enctype="multipart/form-data">
+      <button type="button" class="ci-btn" id="ainaFileBtn" aria-label="Joindre"><i data-lucide="paperclip"></i></button>
+      <input type="file" id="ainaFileInput" hidden accept="image/*,.pdf">
+      <input id="ainaTxt" placeholder="Demandez à AINA…" autocomplete="off">
+      <button type="submit" class="ci-btn send" aria-label="Envoyer"><i data-lucide="send"></i></button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<div class="modal-wrap" id="qrModal" hidden>
+  <div class="modal">
+    <div class="modal-head"><b>Scanner le QR du patient</b>
+      <button data-close aria-label="Fermer"><i data-lucide="x"></i></button></div>
+    <div class="modal-body" style="display:flex;flex-direction:column;align-items:center;padding:6px 20px 2px">
+      <div style="position:relative;width:210px;height:210px;border-radius:16px;overflow:hidden;background:#0B120E;
+        background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1px);background-size:14px 14px">
+        <span style="position:absolute;top:10px;left:10px;width:26px;height:26px;border:3px solid var(--mg-green);border-right:none;border-bottom:none;border-radius:8px 0 0 0"></span>
+        <span style="position:absolute;top:10px;right:10px;width:26px;height:26px;border:3px solid var(--mg-green);border-left:none;border-bottom:none;border-radius:0 8px 0 0"></span>
+        <span style="position:absolute;bottom:10px;left:10px;width:26px;height:26px;border:3px solid var(--mg-green);border-right:none;border-top:none;border-radius:0 0 0 8px"></span>
+        <span style="position:absolute;bottom:10px;right:10px;width:26px;height:26px;border:3px solid var(--mg-green);border-left:none;border-top:none;border-radius:0 0 8px 0"></span>
+        <div class="scan-line" style="position:absolute;left:9%;right:9%;height:2px;background:var(--mg-green);box-shadow:0 0 14px var(--mg-green);animation:scan 1.5s ease-in-out infinite alternate"></div>
+      </div>
+      <p class="mono" id="qrStatus" style="margin-top:14px;font-size:11px;color:var(--ink-50);letter-spacing:.8px;text-align:center;min-height:20px">RECHERCHE DU CODE…</p>
+      <div id="qrFound" style="width:100%"></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn ghost" data-close>Annuler</button>
+      <button type="button" class="btn solid" id="qrUse" hidden><i data-lucide="check"></i>Utiliser ce patient</button>
+    </div>
+  </div>
+</div>
+<style>
+@keyframes scan{from{top:12%}to{top:85%}}
+</style>

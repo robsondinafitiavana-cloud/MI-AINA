@@ -1,0 +1,29 @@
+<div class="card" style="display:flex;flex-direction:column">
+  <header>
+    <div><div class="card-title">Conversations</div><div class="card-sub" id="thSub"></div></div>
+    <button class="btn sm solid" id="newConvBtn"><i data-lucide="edit"></i>Nouvelle</button>
+  </header>
+
+  <!-- Annuaire cherchable (révélé par Nouvelle) -->
+  <div id="convSearch" hidden style="padding:12px 14px 4px;border-bottom:1px solid var(--line)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <i data-lucide="search" style="width:14px;height:14px;color:var(--ink-35)"></i>
+      <input id="convQ" placeholder="Nom, CSB, région, district…" autocomplete="off"
+        style="grid-column:span 2;height:38px;background:var(--field);border:1px solid var(--line-strong);border-radius:9px;padding:0 12px;font-family:var(--sans);font-size:13px;color:var(--ink);outline:none">
+      <input id="convRegion" placeholder="Région" autocomplete="off" style="height:34px;border:1px solid var(--line-strong);border-radius:8px;padding:0 9px">
+      <input id="convDistrict" placeholder="District" autocomplete="off" style="height:34px;border:1px solid var(--line-strong);border-radius:8px;padding:0 9px">
+      <input id="convCsb" placeholder="CSB" autocomplete="off" style="height:34px;border:1px solid var(--line-strong);border-radius:8px;padding:0 9px">
+      <input id="convHospital" placeholder="Hôpital / établissement" autocomplete="off" style="height:34px;border:1px solid var(--line-strong);border-radius:8px;padding:0 9px">
+      <button class="ci-btn" id="convSearchClose" aria-label="Fermer" style="width:32px;height:32px">
+        <i data-lucide="x" style="width:14px;height:14px"></i></button>
+    </div>
+    <button class="btn sm solid" id="convGroupBtn" hidden style="margin:0 0 10px;width:100%">
+      <i data-lucide="users"></i>Écrire aux sélectionnés
+    </button>
+    <div id="convResults" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+      <p style="font-size:12px;color:var(--ink-50);text-align:center;padding:10px">Tapez un nom, un CSB, une région…</p>
+    </div>
+  </div>
+
+  <div class="thread-list" id="threadList">{# rempli par messaging.js #}</div>
+</div>

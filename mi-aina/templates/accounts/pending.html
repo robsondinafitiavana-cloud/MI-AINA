@@ -1,0 +1,13 @@
+{% load static %}
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MI-AINA · Demande envoyée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet"><link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+<style>*{box-sizing:border-box}body{font-family:Inter,sans-serif;background:radial-gradient(ellipse at 78% 12%,rgba(0,126,58,.1),transparent 34%),#F4F1E9;display:grid;place-items:center;min-height:100vh;margin:0;padding:22px;color:#1E2A22}
+.b{width:min(100%,560px);background:#FCFBF5;border:1px solid rgba(30,42,34,.13);border-radius:24px;padding:clamp(25px,6vw,46px);text-align:center;box-shadow:0 28px 75px rgba(30,42,34,.13);animation:in .45s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}.b img{width:190px;max-width:55%;height:135px;object-fit:contain}.ok{width:46px;height:46px;border-radius:50%;background:#e6f3e9;color:#007E3A;display:grid;place-items:center;margin:0 auto 14px;font-size:23px}
+h1{font-family:Montserrat,sans-serif;font-size:clamp(23px,5vw,30px);letter-spacing:-.7px;margin:0 0 10px}.lead{color:#315742;font-weight:600}p{color:rgba(30,42,34,.68);line-height:1.7;margin:8px auto 22px;max-width:44ch}.actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}.actions a{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 19px;border-radius:11px;text-decoration:none;font-weight:700}.primary{background:#007E3A;color:white;box-shadow:0 8px 20px rgba(0,126,58,.2)}.secondary{border:1px solid rgba(30,42,34,.17);color:#1E2A22}.fine{font-size:12px;margin-top:19px;margin-bottom:0}</style></head>
+<body><main class="b"><img src="{% static 'img/logo.png' %}" alt="Logo MI-AINA" style="width:100px;height:100px;object-fit:contain"><br><img src="{% static 'img/miaina-auth-illustration.svg' %}" alt="" aria-hidden="true"><div class="ok" aria-hidden="true">✓</div>
+<h1>Demande de compte envoyée</h1><p class="lead">Bienvenue {{ compte.prenom }}.</p>
+<p>Votre demande pour le rôle <b>{{ compte.get_role_display|default:compte.role }}</b> attend la validation du Pilotage. Vous pourrez vous connecter dès que votre compte sera approuvé.</p>
+<div class="actions"><a class="primary" href="{% url 'login' %}">Retour à la connexion</a><a class="secondary" href="{% url 'register' %}">Créer une autre demande</a></div>
+<p class="fine">MI-AINA · Santé de proximité, coordination et confiance.</p></main></body></html>

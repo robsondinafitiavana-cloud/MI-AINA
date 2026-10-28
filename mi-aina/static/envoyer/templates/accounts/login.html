@@ -1,0 +1,356 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi-AINA · Portail National de Santé · Authentification</title>
+<meta name="mi-auth-illustration" content="{% static 'img/miaina-auth-illustration.svg' %}">
+<meta name="mi-brand-logo" content="{% static 'img/logo.png' %}">
+<link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+<script src="{% static 'js/core/lucide-fallback.js' %}" defer></script>
+
+<style>
+/* ================= FONDATIONS ================= */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --mg-green:#007E3A; --mg-red:#C1272D;
+  --paper:#F4F1E9; --sheet:#FCFBF5; --field:#FFFDF8;
+  --ink:#1E2A22; --ink-70:rgba(30,42,34,.7); --ink-50:rgba(30,42,34,.52); --ink-35:rgba(30,42,34,.35);
+  --line:rgba(30,42,34,.13); --line-strong:rgba(30,42,34,.22);
+  --accent:#007E3A; --amber:#9A6A1F;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'Inter',sans-serif;
+  --serif:'Montserrat',sans-serif;
+}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);display:grid;
+  grid-template-columns:minmax(430px,46%) 1fr;min-height:100vh;-webkit-font-smoothing:antialiased}
+.mono{font-family:var(--mono)}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.grain{position:fixed;inset:0;width:100%;height:100%;opacity:.045;pointer-events:none;z-index:40;mix-blend-mode:multiply}
+
+/* ================= COLONNE GAUCHE ================= */
+.left{border-right:1px solid var(--line);padding:36px 48px 28px;display:flex;flex-direction:column;min-height:100vh}
+.brand-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{width:50px;height:50px;flex:none;display:block}
+.brand-logo svg{width:100%;height:100%;display:block;border-radius:12px;box-shadow:0 2px 8px rgba(30,42,34,.12)}
+.brand-name{font-family:var(--serif);font-weight:600;font-size:22px;letter-spacing:.5px;line-height:1}
+.brand-name span{color:var(--mg-green)}
+.brand-sub{font-family:var(--mono);font-size:9px;letter-spacing:1.4px;color:var(--ink-50);margin-top:5px}
+.secure-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:1.2px;
+  border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--ink-50)}
+.secure-tag svg{width:11px;height:11px}
+.intro{margin-top:44px}
+.intro h1{font-family:var(--serif);font-weight:500;font-size:clamp(32px,3.1vw,45px);line-height:1.06;letter-spacing:-.5px}
+.intro h1 em{font-style:italic;color:var(--accent);transition:color .5s ease}
+.intro p{margin-top:14px;font-size:14px;color:var(--ink-70);max-width:44ch;line-height:1.55}
+
+.registry{margin-top:34px;border-top:1px solid var(--line-strong)}
+.role-entry{display:grid;grid-template-columns:auto auto 1fr auto;gap:16px;align-items:center;width:100%;text-align:left;
+  background:transparent;border:none;border-bottom:1px solid var(--line);padding:18px 12px 18px 16px;cursor:pointer;
+  position:relative;transition:background .25s ease}
+.role-entry::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--role-accent);
+  transform:scaleY(0);transform-origin:top;transition:transform .3s ease}
+.role-entry:hover{background:rgba(30,42,34,.045)}
+.role-entry.active{background:color-mix(in srgb,var(--role-accent) 9%,transparent)}
+.role-entry.active::before{transform:scaleY(1)}
+.entry-num{font-family:var(--mono);font-size:12px;color:var(--ink-35);align-self:start;padding-top:2px}
+.entry-icon{width:42px;height:42px;border:1px solid var(--line-strong);border-radius:4px;display:grid;place-items:center;
+  flex:none;transition:background .3s,border-color .3s,color .3s}
+.entry-icon svg{width:19px;height:19px}
+.role-entry.active .entry-icon{background:var(--role-accent);border-color:var(--role-accent);color:#FCFBF5}
+.entry-line{display:flex;align-items:baseline;gap:8px;font-size:15px}
+.entry-line strong{font-weight:700}
+.entry-line .sub{color:var(--ink-50);font-size:13px}
+.entry-aud{display:block;font-size:12px;color:var(--ink-50);margin-top:4px}
+.entry-chevron{width:15px;height:15px;color:var(--ink-35);opacity:.7;transition:transform .3s,color .3s,opacity .3s}
+.role-entry.active .entry-chevron{color:var(--role-accent);opacity:1;transform:translateX(3px)}
+.kbd-hint{margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--ink-35);display:flex;align-items:center;gap:5px}
+.kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:3px;
+  padding:1px 6px;background:var(--sheet)}
+
+.map-zone{margin-top:auto;padding-top:30px;display:flex;gap:22px;align-items:flex-end}
+.madagascar{width:clamp(160px,15.5vw,225px);height:auto;flex:none}
+.map-stats{padding-bottom:6px}
+.stat-live{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:1.5px;color:var(--ink-70)}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);position:relative;flex:none;transition:background .5s}
+.pulse-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--accent);
+  animation:ping 2.2s ease-out infinite;transition:background .5s}
+@keyframes ping{to{transform:scale(2.7);opacity:0}}
+.stat-big{margin-top:12px;font-size:26px;font-weight:500;line-height:1}
+.stat-big .unit{font-size:11px;letter-spacing:.5px;color:var(--ink-50);font-weight:400}
+.stat-sub{margin-top:7px;font-size:11px;color:var(--ink-50)}
+.stat-sub.tick{animation:statFlash .5s ease}
+@keyframes statFlash{0%{color:var(--accent)}100%{color:var(--ink-50)}}
+.left-footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+  gap:12px;font-family:var(--mono);font-size:9px;letter-spacing:.8px;color:var(--ink-35)}
+
+/* ================= COLONNE DROITE ================= */
+.right{background:var(--sheet);display:flex;position:relative;padding:clamp(26px,5vw,72px);min-height:100vh}
+.right-top{position:absolute;top:22px;right:clamp(20px,3vw,36px);display:flex;gap:10px;align-items:center}
+.clock{font-family:var(--mono);font-size:11px;letter-spacing:.8px;color:var(--ink-50);border:1px solid var(--line);
+  border-radius:999px;padding:6px 12px;background:var(--paper)}
+.net-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.4px;
+  border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--paper)}
+.net-badge .dot{width:7px;height:7px;border-radius:50%}
+.net-badge.on .dot{background:var(--mg-green);box-shadow:0 0 0 3px rgba(0,126,58,.18)}
+.net-badge.off .dot{background:#C97A1F;box-shadow:0 0 0 3px rgba(201,122,31,.18)}
+.panel{width:100%;max-width:620px;margin:auto}
+.panel-inner{animation:panelIn .45s cubic-bezier(.22,.8,.3,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.role-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.role-badge{font-family:var(--mono);font-size:11px;letter-spacing:1.6px;background:var(--accent);color:#FCFBF5;
+  padding:6px 11px;border-radius:2px;transition:background .5s}
+.panel h2{font-family:var(--serif);font-weight:500;font-size:clamp(27px,2.6vw,35px);letter-spacing:-.4px;margin:16px 0 5px}
+.audience{font-size:13.5px;color:var(--ink-70)}
+.tagline{margin-top:14px;font-family:var(--serif);font-style:italic;font-size:16.5px;color:var(--ink-70);line-height:1.5;
+  max-width:54ch;border-left:2px solid var(--accent);padding-left:15px;transition:border-color .5s}
+.specs{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.spec{border-left:1px solid var(--line);border-top:1px solid var(--line);padding:13px 15px;display:flex;gap:11px;
+  align-items:flex-start;transition:background .2s}
+.spec:hover{background:rgba(30,42,34,.035)}
+.spec svg{width:17px;height:17px;color:var(--accent);flex:none;margin-top:1px;transition:color .5s}
+.spec-label{font-size:13px;font-weight:600;line-height:1.3}
+.spec-desc{font-size:11.5px;color:var(--ink-50);margin-top:3px;line-height:1.4}
+.demo-row{margin-top:18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.demo-label{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;color:var(--ink-50);margin-right:2px}
+.demo-pill{font-family:var(--mono);font-size:11.5px;background:transparent;border:1px solid var(--line-strong);
+  border-radius:999px;padding:5px 12px;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.demo-pill:hover{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent)}
+
+.login-form{margin-top:26px}
+.field{margin-bottom:17px;position:relative}
+.field label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--ink-70);margin-bottom:8px}
+.input-wrap{position:relative}
+.input-wrap > svg.lead{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--ink-35);pointer-events:none}
+.input-wrap input{width:100%;height:49px;background:var(--field);border:1px solid var(--line-strong);border-radius:3px;
+  padding:0 46px 0 40px;font-family:var(--sans);font-size:14.5px;color:var(--ink);transition:border-color .2s,box-shadow .2s}
+.input-wrap input::placeholder{color:var(--ink-35)}
+.input-wrap input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
+.field.invalid input{border-color:var(--mg-red);box-shadow:0 0 0 3px rgba(193,39,45,.13)}
+.field .hint{font-size:11.5px;color:var(--ink-50);margin-top:7px}
+.field .err{display:none;font-size:11.5px;color:var(--mg-red);margin-top:7px;font-weight:500}
+.field.invalid .err{display:block}
+.field.invalid .hint{display:none}
+.eye-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;background:transparent;
+  border-radius:3px;display:grid;place-items:center;cursor:pointer;color:var(--ink-50);transition:color .2s,background .2s}
+.eye-btn:hover{color:var(--ink);background:rgba(30,42,34,.06)}
+.eye-btn svg{width:17px;height:17px}
+.eye-btn .icon-off{display:none}
+.eye-btn.show .icon-on{display:none}
+.eye-btn.show .icon-off{display:block}
+.caps-hint{display:flex;align-items:center;gap:5px;margin-top:7px;font-family:var(--mono);font-size:10.5px;color:var(--amber)}
+.caps-hint svg{width:12px;height:12px}
+.caps-hint[hidden]{display:none}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 20px;flex-wrap:wrap}
+.check{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink-70);cursor:pointer;user-select:none}
+.check input{position:absolute;opacity:0;width:0;height:0}
+.check .box{width:18px;height:18px;border:1px solid var(--line-strong);border-radius:3px;background:var(--field);
+  display:grid;place-items:center;flex:none;transition:background .2s,border-color .2s}
+.check .box svg{width:12px;height:12px;color:#FCFBF5;opacity:0;transform:scale(.4);transition:opacity .15s,transform .2s}
+.check input:checked + .box{background:var(--accent);border-color:var(--accent)}
+.check input:checked + .box svg{opacity:1;transform:scale(1)}
+.submit{width:100%;height:53px;border:none;border-radius:3px;cursor:pointer;background:var(--accent);color:#FCFBF5;
+  position:relative;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;
+  letter-spacing:.2px;transition:background .25s,transform .1s,box-shadow .25s}
+.submit:hover{background:color-mix(in srgb,var(--accent) 86%,#1E2A22);box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 30%,transparent)}
+.submit:active{transform:translateY(1px)}
+.submit svg{width:17px;height:17px;transition:transform .25s}
+.submit:hover svg{transform:translateX(4px)}
+.submit .spinner{display:none;position:absolute;left:50%;top:50%;width:19px;height:19px;
+  border:2px solid rgba(252,251,245,.35);border-top-color:#FCFBF5;border-radius:50%;
+  transform:translate(-50%,-50%);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.submit.loading{pointer-events:none}
+.submit.loading .btn-label,.submit.loading svg{opacity:0}
+.submit.loading .spinner{display:block}
+.secure-note{margin-top:18px;display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:var(--ink-50);line-height:1.5}
+.secure-note svg{width:14px;height:14px;color:var(--accent);flex:none;margin-top:1px}
+
+/* ================= TOASTS ================= */
+.toasts{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:10px;z-index:99;max-width:min(92vw,390px)}
+.toast{display:flex;gap:11px;align-items:flex-start;background:#0F1A14;color:var(--paper);padding:14px 17px;
+  border-radius:13px;font-size:13px;line-height:1.45;box-shadow:0 12px 32px rgba(15,26,20,.4);
+  animation:toastIn .3s cubic-bezier(.2,.9,.3,1.15)}
+.toast.out{animation:toastOut .3s ease forwards}
+.toast svg{width:16px;height:16px;flex:none;margin-top:1px}
+.toast.success svg{color:#6FCB93}
+.toast.error svg{color:#F0937F}
+.toast.info svg{color:#E8C56B}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
+
+/* Identité MI-AINA : titres nets, surfaces apaisantes et illustration santé/IA. */
+body{background:radial-gradient(ellipse at 90% 12%,rgba(0,126,58,.07),transparent 34%),var(--paper)}
+.brand-name,.intro h1,.panel h2,.spec-label,.entry-line strong{font-family:var(--serif);font-weight:700}
+.intro h1{font-size:clamp(31px,3vw,43px);letter-spacing:-1.4px}
+.panel h2{font-size:clamp(25px,2.4vw,32px);letter-spacing:-.9px}
+.role-entry{border-radius:14px;padding-top:15px;padding-bottom:15px}
+.entry-icon{border-radius:12px}
+.right{background:linear-gradient(145deg,#fffefa 0%,#f7f8f1 100%)}
+.role-badge{border-radius:999px;padding:7px 12px;font-weight:600}
+.login-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,205px);align-items:center;gap:5px}
+.login-hero-art{width:100%;max-height:165px;object-fit:contain;filter:drop-shadow(0 10px 14px rgba(30,42,34,.08));animation:artFloat 5s ease-in-out infinite}
+@keyframes artFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.tagline{font-family:var(--sans);font-style:normal;font-size:13px;background:rgba(0,126,58,.055);padding:11px 13px;border-radius:0 12px 12px 0}
+.specs{border-radius:14px;overflow:hidden;background:rgba(255,255,255,.56)}
+.spec{padding:12px 13px}
+.spec svg{color:var(--accent)}
+.demo-pill{border-radius:999px;background:#fffefa}
+.input-wrap input{border-radius:10px;height:50px}
+.eye-btn{border-radius:9px}
+.submit{border-radius:11px;box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 18%,transparent)}
+.signup-note{padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.54);line-height:1.5}
+.secure-note{padding-top:13px;border-top:1px solid var(--line)}
+.toast{border:1px solid rgba(255,255,255,.14);border-radius:14px}
+@media(max-width:620px){.login-hero{grid-template-columns:minmax(0,1fr) 112px;gap:0}.login-hero-art{max-height:115px}.spec{padding:10px 11px}}
+@media(prefers-reduced-motion:reduce){.login-hero-art{animation:none}}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width:1080px){.map-zone .madagascar{width:160px}}
+@media (max-width:960px){
+  body{grid-template-columns:1fr}
+  .left{min-height:auto;border-right:none;border-bottom:1px solid var(--line);padding:26px 24px 22px}
+  .map-zone,.kbd-hint{display:none}
+  .intro{margin-top:30px}.intro h1{font-size:29px}
+  .right{min-height:calc(100vh - 120px);padding-top:78px}
+}
+@media (max-width:560px){
+  .specs{grid-template-columns:1fr}
+  .left{padding:22px 18px 18px}
+  .right-top{left:20px;justify-content:space-between}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+  <!-- ================= COLONNE GAUCHE ================= -->
+  <aside class="left">
+    <div class="brand-row">
+      <div class="brand">
+        <span class="brand-logo" data-logo aria-hidden="true"></span>
+        <div>
+          <div class="brand-name">Mi-<span>AINA</span></div>
+          <div class="brand-sub">PORTAIL NATIONAL DE SANTÉ · MADAGASIKARA</div>
+        </div>
+      </div>
+      <span class="secure-tag"><i data-lucide="lock"></i>ACCÈS SÉCURISÉ</span>
+    </div>
+
+    <div class="intro">
+      <h1>Trois métiers,<br>un même <em>pays</em>.</h1>
+      <p>Sélectionnez votre rôle pour accéder à votre espace de travail. Vos identifiants sont fournis par votre structure de rattachement.</p>
+    </div>
+
+    <nav class="registry" aria-label="Choix du rôle">
+      <button type="button" class="role-entry active" data-key="PREMIERE_LIGNE" style="--role-accent:#007E3A">
+        <span class="entry-num">01</span>
+        <span class="entry-icon"><i data-lucide="scan-line"></i></span>
+        <span>
+          <span class="entry-line"><strong>Première ligne</strong><span class="sub">— Collecte &amp; suivi patient</span></span>
+          <span class="entry-aud">Agent communautaire · Infirmier · Sage-femme</span>
+        </span>
+        <span><i data-lucide="chevron-right" class="entry-chevron"></i></span>
+      </button>
+      <button type="button" class="role-entry" data-key="MEDECIN" style="--role-accent:#C1272D">
+        <span class="entry-num">02</span>
+        <span class="entry-icon"><i data-lucide="stethoscope"></i></span>
+        <span>
+          <span class="entry-line"><strong>Médecin</strong><span class="sub">— Prise en charge</span></span>
+          <span class="entry-aud">Généraliste · Spécialiste · Médecin de garde</span>
+        </span>
+        <span><i data-lucide="chevron-right" class="entry-chevron"></i></span>
+      </button>
+      <button type="button" class="role-entry" data-key="PILOTAGE" style="--role-accent:#1C4030">
+        <span class="entry-num">03</span>
+        <span class="entry-icon"><i data-lucide="landmark"></i></span>
+        <span>
+          <span class="entry-line"><strong>Pilotage</strong><span class="sub">— Supervision nationale</span></span>
+          <span class="entry-aud">Responsable CSB · Épidémiologiste · Ministère</span>
+        </span>
+        <span><i data-lucide="chevron-right" class="entry-chevron"></i></span>
+      </button>
+    </nav>
+
+    <div class="kbd-hint">
+      <span class="kbd">1</span><span class="kbd">2</span><span class="kbd">3</span>
+      <span>ou</span><span class="kbd">↑</span><span class="kbd">↓</span><span>pour changer de rôle</span>
+    </div>
+
+    <div class="map-zone">
+      <svg class="madagascar" viewBox="0 0 190 344" aria-hidden="true">
+        <defs>
+          <pattern id="dotgrid" width="6.5" height="6.5" patternUnits="userSpaceOnUse">
+            <circle cx="1.6" cy="1.6" r="1.05" style="fill:var(--ink)"/>
+          </pattern>
+        </defs>
+        <path d="M159 2 C165 6 168 14 172 22 C176 32 181 50 183 72 C184 95 180 112 172 126 C165 142 163 148 160 158 C154 178 148 192 143 206 C138 222 135 232 130 244 C125 258 122 268 118 280 C114 296 108 312 100 324 C94 332 84 336 72 338 C62 339 52 340 48 332 C42 322 30 300 22 288 C12 272 6 254 5 240 C6 226 18 216 26 206 C28 196 24 178 22 164 C20 148 24 130 30 116 C36 104 52 100 66 98 C74 96 80 92 82 88 C84 82 78 74 88 66 C100 58 112 52 120 46 C130 40 140 32 148 22 C152 14 154 6 159 2 Z" fill="url(#dotgrid)" opacity=".26"/>
+        <path d="M159 2 C165 6 168 14 172 22 C176 32 181 50 183 72 C184 95 180 112 172 126 C165 142 163 148 160 158 C154 178 148 192 143 206 C138 222 135 232 130 244 C125 258 122 268 118 280 C114 296 108 312 100 324 C94 332 84 336 72 338 C62 339 52 340 48 332 C42 322 30 300 22 288 C12 272 6 254 5 240 C6 226 18 216 26 206 C28 196 24 178 22 164 C20 148 24 130 30 116 C36 104 52 100 66 98 C74 96 80 92 82 88 C84 82 78 74 88 66 C100 58 112 52 120 46 C130 40 140 32 148 22 C152 14 154 6 159 2 Z" fill="none" style="stroke:var(--ink)" stroke-opacity=".45" stroke-width="1.1" stroke-linejoin="round"/>
+        <text x="121" y="168" font-family="IBM Plex Mono, monospace" font-size="6.5" letter-spacing="1.2" style="fill:var(--ink)" fill-opacity=".55">ANTANANARIVO</text>
+        <g><title>Antananarivo</title><circle cx="112" cy="172" r="2.6" style="fill:var(--accent)"/><circle cx="112" cy="172" r="3" fill="none" style="stroke:var(--accent)" stroke-width="1"><animate attributeName="r" values="3;12" dur="2.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".55;0" dur="2.8s" repeatCount="indefinite"/></circle></g>
+        <g><title>Toamasina</title><circle cx="160" cy="150" r="2.2" style="fill:var(--accent)"/><circle cx="160" cy="150" r="3" fill="none" style="stroke:var(--accent)" stroke-width="1"><animate attributeName="r" values="3;10" dur="2.8s" begin=".5s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;0" dur="2.8s" begin=".5s" repeatCount="indefinite"/></circle></g>
+        <g><title>Mahajanga</title><circle cx="84" cy="88" r="2.2" style="fill:var(--accent)"/><circle cx="84" cy="88" r="3" fill="none" style="stroke:var(--accent)" stroke-width="1"><animate attributeName="r" values="3;10" dur="2.8s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;0" dur="2.8s" begin="1s" repeatCount="indefinite"/></circle></g>
+        <g><title>Fianarantsoa</title><circle cx="100" cy="232" r="2.2" style="fill:var(--accent)"/><circle cx="100" cy="232" r="3" fill="none" style="stroke:var(--accent)" stroke-width="1"><animate attributeName="r" values="3;10" dur="2.8s" begin="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;0" dur="2.8s" begin="1.5s" repeatCount="indefinite"/></circle></g>
+        <g><title>Antsiranana</title><circle cx="150" cy="18" r="2" style="fill:var(--accent)"/><circle cx="150" cy="18" r="3" fill="none" style="stroke:var(--accent)" stroke-width="1"><animate attributeName="r" values="3;9" dur="2.8s" begin="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;0" dur="2.8s" begin="2s" repeatCount="indefinite"/></circle></g>
+        <g><title>Toliara</title><circle cx="22" cy="282" r="2" style="fill:var(--accent)"/><circle cx="22" cy="282" r="3" fill="none" style="stroke:var(--accent)" stroke-width="1"><animate attributeName="r" values="3;9" dur="2.8s" begin="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;0" dur="2.8s" begin="2.4s" repeatCount="indefinite"/></circle></g>
+      </svg>
+      <div class="map-stats">
+        <div class="stat-live mono"><span class="pulse-dot"></span>MADALERT · RÉSEAU CSB EN DIRECT</div>
+        <div class="stat-big mono"><span id="csbCount">412</span> <span class="unit">CSB connectés</span></div>
+        <div class="stat-sub mono" id="syncRow"><span id="syncCount">23</span> files en attente de synchronisation</div>
+        <div class="stat-sub mono" id="pingRow">Dernière remontée terrain : il y a <span id="lastPing">7</span> s</div>
+      </div>
+    </div>
+
+    <footer class="left-footer">
+      <span>© 2025 MINISTERAN'NY FAHASALAMAM-BAHOAKA</span>
+      <span>MI-AINA · v1.0</span>
+    </footer>
+  </aside>
+
+  <!-- ================= COLONNE DROITE ================= -->
+  <section class="right">
+    <div class="right-top">
+      <span class="clock" id="clock">--:--:-- · ANTANANARIVO</span>
+      <span class="net-badge on" id="netBadge"><span class="dot"></span>En ligne</span>
+    </div>
+    <div class="panel" id="panel"></div>
+  </section>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <svg class="grain" aria-hidden="true">
+    <filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/></filter>
+    <rect width="100%" height="100%" filter="url(#grainF)"/>
+  </svg>
+
+  <!-- Formulaire Django réel — rempli par le JS puis soumis -->
+  <form method="post" action="{% url 'login' %}" id="realForm" hidden>
+    {% csrf_token %}
+    <input type="hidden" name="role" id="fRole" value="PREMIERE_LIGNE">
+    <input type="hidden" name="identifiant" id="fIdent">
+    <input type="hidden" name="password" id="fPass">
+    <input type="hidden" name="remember" id="fRem">
+  </form>
+
+{% load static %}
+{% url 'register' as register_url %}
+{# Données serveur -> île JSON (aucun JavaScript en ligne dans le template) #}
+{{ form.role.value|default:"PREMIERE_LIGNE"|json_script:"mi-login-role" }}
+{{ register_url|json_script:"mi-register-url" }}
+<ul id="mi-login-errors" hidden>
+  {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+  {% for field, errs in form.errors.items %}{% if field != '__all__' %}{% for e in errs %}<li>{{ e }}</li>{% endfor %}{% endif %}{% endfor %}
+</ul>
+<script src="{% static 'js/login.js' %}"></script>
+</body>
+</html>

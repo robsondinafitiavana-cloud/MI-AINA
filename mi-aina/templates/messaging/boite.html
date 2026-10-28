@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Mi-AINA · Messagerie{% endblock %}
+{% block content %}
+<section class="view">
+  <header class="view-head"><div>
+    <h2 class="vh-title">Messagerie</h2>
+    <p class="vh-sub">{{ fils|length }} conversation{{ fils|length|pluralize }} — envoi par formulaire, fonctionne même sans JavaScript.</p>
+  </div><a class="btn solid" href="{% url 'msg_boite_nouveau' %}"><i data-lucide="plus"></i>Nouvelle conversation</a></header>
+
+  <div class="card" style="overflow:hidden">
+    {% for row in fils %}
+      <a href="{% url 'msg_boite_fil' row.fil.pk %}" style="text-decoration:none;color:inherit;display:block;padding:14px 17px;border-top:1px solid var(--line)">
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="p-av n">{% for a in row.autres|slice:":1" %}{{ a.initiales }}{% endfor %}</span>
+          <div style="flex:1;min-width:0">
+            <b style="font-size:13.5px">{{ row.titre }}</b>
+            <div style="font-size:11px;color:var(--ink-50);margin-top:3px">
+              {% for a in row.autres %}{{ a.nom_court }} ({{ a.get_role_display }}){% if not forloop.last %} · {% endif %}{% endfor %}
+            </div>
+            {% if row.dernier %}
+              <p style="font-size:12px;color:var(--ink-70);margin-top:5px;line-height:1.5">
+                {% if row.dernier.auteur_id == user.id %}Vous : {% endif %}{{ row.dernier.texte|truncatechars:90 }}</p>
+            {% else %}
+              <p style="font-size:12px;color:var(--ink-50);margin-top:5px">Aucun message.</p>
+            {% endif %}
+          </div>
+          <div style="text-align:right;flex:none">
+            {% if row.dernier %}<span style="font-size:10.5px;color:var(--ink-50)">{{ row.dernier.created_at|date:"d/m H:i" }}</span>{% endif %}
+            {% if row.non_lus %}<div><span class="badge green" style="margin-top:5px">{{ row.non_lus }} NON LU{{ row.non_lus|pluralize:"S" }}</span></div>{% endif %}
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <div class="empty" style="padding:30px 18px;text-align:center">
+        <div class="empty-ic"><i data-lucide="message-circle"></i></div>
+        <h3>Aucune conversation</h3>
+        <p style="color:var(--ink-50);font-size:12.5px">Ouvrez une conversation avec un médecin, un agent ou le Pilotage.</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

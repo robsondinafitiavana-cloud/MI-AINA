@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mi-AINA · Espace Première ligne{% endblock %}
+{% block favicon %}<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%23007E3A"/><path d="M32 16v32M16 32h32" stroke="white" stroke-width="7" stroke-linecap="round"/></svg>'>{% endblock %}
+{% block side_extra %}
+<div class="side-note ok"><i data-lucide="cpu"></i><span>Rôle exclusif IoT — vous êtes le seul à gérer les boîtiers ESP32 et la capture des constantes.</span></div>
+{% endblock %}
+
+{% block content %}
+{{ patients_json|json_script:"data-patients" }}
+{{ doctors_json|json_script:"data-doctors" }}
+{{ consults_json|json_script:"data-consults" }}
+{{ reports_json|json_script:"data-reports" }}
+{{ devices_json|json_script:"data-devices" }}
+{{ measures_json|json_script:"data-measures" }}
+{{ threads_json|json_script:"data-threads" }}
+{{ fils_json|json_script:"data-fils" }}
+{{ urls_json|json_script:"data-urls" }}
+{{ me_json|json_script:"data-me" }}
+{{ pubs_json|json_script:"data-pubs" }}
+{{ forum_json|json_script:"data-forum" }}
+{{ notifs_json|json_script:"data-notifs" }}
+
+<!-- ============ OVERVIEW ============ -->
+<section class="view" data-view="overview">
+  <header class="hero">
+    <div>
+      <p class="hero-kicker mono"><span class="flag"></span>TONGA SOA · {{ user.rattachement|upper }}</p>
+      <h1 id="greetTitle"></h1>
+      <p class="hero-sub" id="greetMsg"></p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn ghost" id="syncNowBtn"><i data-lucide="refresh-cw"></i>Synchroniser</button>
+      <button class="btn solid" data-goto="saisie"><i data-lucide="clipboard-pen"></i>Nouvelle consultation</button>
+    </div>
+  </header>
+
+  <section class="stats">
+    <button class="stat" data-goto="patients" style="--tone:#026630;--tint:rgba(0,126,58,.09)">
+      <div class="top"><span class="ic"><i data-lucide="users"></i></span><span class="delta">rattachés</span></div>
+      <div class="val" id="statPatVal">0</div><div class="lbl">Patients suivis</div>
+      <div class="hint">Votre village et communes</div>
+    </button>
+    <button class="stat" data-goto="consults" style="--tone:#1C4030;--tint:rgba(28,64,48,.09)">
+      <div class="top"><span class="ic"><i data-lucide="stethoscope"></i></span><span class="delta">aujourd'hui</span></div>
+      <div class="val" id="statConsVal">0</div><div class="lbl">Consultations du jour</div>
+      <div class="hint" id="statConsHint"></div>
+    </button>
+    <button class="stat" data-goto="reports" style="--tone:#9A6A1F;--tint:rgba(154,106,31,.11)">
+      <div class="top"><span class="ic"><i data-lucide="megaphone"></i></span><span class="delta">total</span></div>
+      <div class="val" id="statRepVal">0</div><div class="lbl">Signalements</div>
+      <div class="hint">Transmis à Pilotage &amp; médecin</div>
+    </button>
+    <button class="stat" data-goto="devices" style="--tone:#026630;--tint:rgba(0,126,58,.09)">
+      <div class="top"><span class="ic"><i data-lucide="cpu"></i></span><span class="delta" id="statDevDelta"></span></div>
+      <div class="val" id="statDevVal">0</div><div class="lbl">Boîtiers IoT</div>
+      <div class="hint" id="statDevHint"></div>
+    </button>
+  </section>
+
+  <section class="bento">
+    <div class="card">
+      <header><div><div class="card-title">Poste de collecte</div><div class="card-sub">Vos 4 gestes du quotidien — pensés pour le terrain</div></div></header>
+      <div class="qa-grid">
+        <button class="qa v" data-goto="saisie"><span class="qa-ic"><i data-lucide="mic"></i></span><b>Dictée vocale</b><p>Symptômes en malagasy, structurés par l'IA dans la fiche patient</p></button>
+        <button class="qa i" data-goto="measures"><span class="qa-ic"><i data-lucide="activity"></i></span><b>Capturer constantes</b><p>SpO₂ · température · pouls depuis le boîtier ESP32</p></button>
+        <button class="qa c" data-goto="saisie"><span class="qa-ic"><i data-lucide="clipboard-pen"></i></span><b>Consultation</b><p>Créer le dossier et, si besoin, demander un avis médical</p></button>
+        <button class="qa s" data-goto="reports"><span class="qa-ic"><i data-lucide="megaphone"></i></span><b>Signaler</b><p>Foyer suspecté, événement sanitaire dans le village</p></button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card">
+        <header><div><div class="card-title">Boîtier actif</div><div class="card-sub">ESP32 assigné à vous</div></div></header>
+        <div id="devMini" style="padding:14px 18px 18px"></div>
+      </div>
+      <div class="card" style="flex:1">
+        <header><div><div class="card-title">File de synchronisation</div><div class="card-sub" id="syncSub"></div></div>
+          <button class="qa v" data-goto="saisie"><span class="qa-ic"><i data-lucide="clipboard-check"></i></span><b>Consultation éclair</b><p>Cochez les symptômes — l'IA prédit instantanément, hors-ligne</p></button>
+        <div style="padding:14px 18px 18px">
+          <div class="sync-items" id="syncItems"></div>
+          <div style="height:4px;border-radius:99px;background:rgba(30,42,34,.1);overflow:hidden;margin-top:10px"><i id="syncProg" style="display:block;height:100%;width:0;background:var(--mg-green);border-radius:99px;transition:width .5s"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ VUES SECONDAIRES (remplies par agent.js) ============ -->
+<section class="view" id="view-saisie"   data-view="saisie"   hidden></section>
+<section class="view" id="view-patients" data-view="patients" hidden></section>
+<section class="view" id="view-consults" data-view="consults" hidden></section>
+<section class="view" id="view-reports"  data-view="reports"  hidden></section>
+<section class="view" id="view-devices"  data-view="devices"  hidden></section>
+<section class="view" id="view-measures" data-view="measures" hidden></section>
+<section class="view" id="view-dossier" data-view="dossier" hidden></section>
+
+<section class="view" id="view-messagerie" data-view="messagerie" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Messagerie</h2>
+    <p class="vh-sub">Échangez avec les comptes Première Ligne, Médecin et Pilotage. Les conversations et pièces jointes sont enregistrées.</p></div></header>
+  <div class="grid-row2" style="grid-template-columns:1fr 1.6fr">
+    {% include "partials/messaging/_thread_list.html" %}
+    {% include "partials/messaging/_chat.html" %}
+  </div>
+</section>
+
+<section class="view" id="view-visio" data-view="visio" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Visioconsultation</h2>
+    <p class="vh-sub">Cherchez et choisissez le médecin à joindre — la salle s'ouvre à faible débit.</p></div></header>
+  <div class="card" style="padding:14px" id="preCall"></div>
+  <div id="callStage" hidden style="margin-top:14px">
+    <div class="visio-grid">
+      {% include "partials/telemedicine/_visio_stage.html" %}
+      <aside class="card consult-call-panel" id="consultCallPanel">
+        <header><div><div class="card-title">Suivi de consultation</div>
+          <div class="card-sub" id="consultCallStatus">Préparation de l’appel</div></div>
+          <span class="consult-call-state" id="consultCallState">EN ATTENTE</span></header>
+        <div class="consult-call-content">
+          <section class="consult-call-patient">
+            <span class="consult-call-label">PATIENT</span>
+            <b id="consultCallPatient">Patient de la consultation</b>
+            <small id="consultCallCode"></small>
+          </section>
+          <section class="consult-call-facts">
+            <div><span>Motif</span><b id="consultCallMotif">Non renseigné</b></div>
+            <div><span>Priorité</span><b id="consultCallSeverity">—</b></div>
+          </section>
+          <label class="consult-call-notes-label" for="consultCallNotes">Notes de l’échange</label>
+          <textarea id="consultCallNotes" placeholder="Saisissez les éléments utiles à garder dans le résumé de l’appel…"></textarea>
+          <div class="consult-call-panel-actions">
+            <a class="btn sm ghost" id="consultCallRecord" href="#" hidden><i data-lucide="folder-open"></i>Ouvrir le dossier</a>
+            <small id="consultCallSaved" role="status">Les notes seront enregistrées à la fin de l’appel.</small>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+<section class="view" id="view-formations" data-view="formations" hidden></section>
+<section class="view" id="view-onboarding" data-view="onboarding" hidden></section>
+<section class="view" id="view-forum" data-view="forum" hidden></section>
+{% include "accounts/_profile_compte.html" %}
+
+{% include "partials/iot/_modal_qr.html" %}
+{% include "partials/reports/_modal_signalement.html" %}
+{% endblock %}
+
+{% block page_js %}
+<script src="{% static 'js/telemedicine/visio-stage.js' %}"></script>
+<script src="{% static 'js/dashboards/agent/core.js' %}"></script>
+<script src="{% static 'js/dashboards/shared_patient_dossier.js' %}"></script>
+<script src="{% static 'js/dashboards/agent/forum.js' %}"></script>
+<script src="{% static 'js/dashboards/agent/notif.js' %}"></script>
+{% endblock %}

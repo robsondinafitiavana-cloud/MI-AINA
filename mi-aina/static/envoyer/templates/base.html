@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Mi-AINA{% endblock %}</title>
+{% block favicon %}<link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">{% endblock %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<!-- Polices -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Icônes Lucide + CDN de secours -->
+<script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<!-- Leaflet : CSS avant JS, cluster après Leaflet (jsdelivr + fallbacks) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+{% block extra_head %}{% endblock %}
+</head>
+<body data-role="{{ user.role_code|default:'pilotage' }}" data-prenom="{{ user.prenom|escapejs }}" data-superuser="{% if user.is_superuser %}1{% else %}0{% endif %}">
+
+  <div class="wm" data-logo data-logo-src="{% static 'img/logo.png' %}" aria-hidden="true"></div>
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="side-head">
+      <span class="side-logo" data-logo data-logo-src="{% static 'img/logo.png' %}" aria-hidden="true"></span>
+      <div class="side-brand">
+        <div class="side-name">Mi-<b>AINA</b></div>
+        <div class="side-sub">{% firstof user.role_espace 'MI-AINA' %}</div>
+      </div>
+    </div>
+    <button class="side-toggle" id="sideToggle" aria-label="Replier le menu"><i data-lucide="chevrons-left"></i></button>
+
+    {% block side_extra %}{% endblock %}
+    <nav class="side-nav" id="sideNav"><!-- rempli par MI_NAV --></nav>
+
+    <div class="side-foot">
+      <div class="side-profile">
+        <span class="avatar"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static 'img/default-avatar.svg' %}{% endif %}" alt="Photo de profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></span>
+        <div class="side-profile-txt">
+          <div class="sp-name">{% firstof user.nom_court user.nom user.email %}</div>
+          <div class="sp-role">{% firstof user.rattachement user.role %}</div>
+        </div>
+        <button class="sp-out" data-logout aria-label="Se déconnecter"><i data-lucide="log-out"></i></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+
+    <div class="island-bar">
+      <div class="island">
+        <button class="island-menu" id="menuBtn" aria-label="Ouvrir le menu"><i data-lucide="menu"></i></button>
+        <button class="island-search" id="searchTrigger">
+          <i data-lucide="search"></i>
+          <input readonly placeholder="Rechercher une commande…" aria-label="Ouvrir la recherche">
+          <span class="kbd-chip">Ctrl K</span>
+        </button>
+        <span class="island-sep"></span>
+        <div class="island-clock"><span id="islandDate">—</span><b id="islandTime">--:--:--</b></div>
+        <span class="island-sep"></span>
+        <div class="island-sync mono" id="syncPill"><span class="sync-dot"></span><span id="syncTxt">À JOUR</span></div>
+        <button class="island-bell" id="bellBtn" aria-label="Notifications"><i data-lucide="bell"></i><span class="bell-dot" id="bellDot" {% if not global_unread_count %}hidden{% endif %}></span><span id="bellCount" {% if not global_unread_count %}hidden{% endif %} style="position:absolute;transform:translate(8px,-10px);background:#c1272d;color:white;border-radius:10px;padding:1px 5px;font-size:9px">{{ global_unread_count }}</span></button>
+        <button class="island-avatar" id="avatarBtn" aria-label="Mon compte"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static 'img/default-avatar.svg' %}{% endif %}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></button>
+      </div>
+
+      <div class="drop" id="notifDrop" hidden>
+        <div class="drop-head"><b>Notifications</b><button id="markRead">Tout marquer comme lu</button></div>
+        <div id="notifList">{% block notifs %}{% for n in global_notifs %}<a class="drop-item" href="{% url 'notification_open' n.pk %}" style="text-decoration:none;color:inherit;{% if not n.lu %}background:rgba(0,126,58,.05){% endif %}"><i data-lucide="{{ n.icone }}" style="width:14px;height:14px;color:var(--mg-green);flex:none"></i><span><b>{{ n.titre }}</b>{% if n.texte %}<small style="display:block;color:var(--ink-50)">{{ n.texte }}</small>{% endif %}<small style="display:block;color:var(--ink-50)">{{ n.created_at|date:"d/m H:i" }}</small></span></a>{% empty %}<div class="drop-item">Aucune notification.</div>{% endfor %}{% endblock %}</div>
+        <div class="drop-foot">{% block notifs_foot %}{% endblock %}</div>
+      </div>
+      <div class="drop" id="avatarDrop" hidden>
+        <div class="drop-head"><b>{% firstof user.prenom user.nom %} {{ user.nom }}</b>
+          <span class="mono" style="font-size:10px;color:var(--ink-50)">{% firstof user.identifiant_court user.role %}</span></div>
+        {% block user_menu %}
+        <div class="drop-item" data-me data-act="settings"><div><p style="font-weight:600">Paramètres du compte</p></div></div>
+        {% endblock %}
+        <div class="drop-item" data-me data-act="logout"><div><p style="font-weight:600;color:var(--mg-red)">Se déconnecter</p></div></div>
+      </div>
+    </div>
+
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- ================= DOCK ================= -->
+  <nav class="dock" id="dock" aria-label="Accès rapide"><!-- rempli par MI_NAV --></nav>
+
+  <!-- ================= Ctrl+K ================= -->
+  <div class="cmdk-wrap" id="cmdk" hidden>
+    <div class="cmdk">
+      <div class="cmdk-head">
+        <i data-lucide="search"></i>
+        <input id="cmdkInput" placeholder="Tapez une commande ou cherchez…" autocomplete="off">
+        <span class="kbd-chip">ESC</span>
+      </div>
+      <div class="cmdk-list" id="cmdkList"></div>
+      <div class="cmdk-foot mono">
+        <span><span class="kbd-chip">↑</span> <span class="kbd-chip">↓</span> naviguer</span>
+        <span><span class="kbd-chip">↵</span> exécuter</span>
+        <span class="right">MI-AINA · CTRL K</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  {% if user.is_authenticated and user.role == 'PREMIERE_LIGNE' or user.is_authenticated and user.role == 'MEDECIN' or user.is_authenticated and user.role == 'PILOTAGE' %}
+  <button type="button" id="ainaFloatToggle" class="aina-float-toggle" aria-label="Ouvrir l’assistant AINA"
+          aria-controls="ainaFloatWindow" aria-expanded="false"
+          title="Cliquer pour ouvrir · glisser pour déplacer">✦</button>
+  <div id="ainaFloatWindow" class="aina-float-window" role="dialog" aria-label="Assistant médical AINA"
+       aria-modal="false" hidden>
+    <div class="aina-float-tools">
+      <span class="aina-float-hint">AINA · Assistant médical</span>
+      <button type="button" id="ainaFloatMin" aria-label="Réduire AINA" title="Réduire">−</button>
+      <button type="button" id="ainaFloatClose" aria-label="Fermer AINA" title="Fermer">×</button>
+    </div>
+    {% include "partials/messaging/_aina_chat.html" %}
+  </div>
+  <script src="{% static 'js/core/aina-floating.js' %}"></script>
+  {% endif %}
+
+<span id="coreData" data-logout="{% url 'logout' %}" hidden></span>
+{# Jeton CSRF : rendu ici pour que le cookie csrftoken soit toujours posé. #}
+<form id="csrfHolder" hidden>{% csrf_token %}</form>
+<script src="{% static 'js/core/vendor-fallbacks.js' %}"></script>
+<script src="{% static 'js/core/base.js' %}"></script>
+<script src="{% static 'js/core/profile-photo.js' %}"></script>
+{% if user.is_authenticated and user.role != 'PREMIERE_LIGNE' %}<script src="{% static 'js/core/notifications-global.js' %}"></script>{% endif %}
+
+{% block page_js %}{% endblock %}
+</body>
+</html>

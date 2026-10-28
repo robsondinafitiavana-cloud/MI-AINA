@@ -1,0 +1,87 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dossier {{ patient.nom }} - MI-AINA</title>
+<link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#007E3A;--ink:#1E2A22;--ink50:#6B7A70;--line:#E3E8E4;--bg:#F6F8F6}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,sans-serif;font-size:14px;background:var(--bg);color:var(--ink)}
+.top{background:var(--g);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top b{font-size:15px;letter-spacing:.5px}
+.top a{margin-left:auto;color:#fff;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.5);padding:6px 12px;border-radius:8px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}.patient-nav{background:#1e2a22;color:white;padding:18px 14px;position:sticky;top:0;height:100vh}.patient-nav a{display:block;color:white;text-decoration:none;padding:10px;border-radius:8px;margin:5px 0}.patient-nav a:hover{background:#ffffff20}main{max-width:1200px;margin:0 auto;padding:20px 16px 60px;width:100%}
+h1,h2{font-family:Montserrat,sans-serif;font-weight:700}h1{font-size:27px;margin:6px 0 2px}
+.sub{color:var(--ink50);font-size:13px;margin:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+h2{font-size:14px;margin:0 0 12px;text-transform:uppercase;letter-spacing:1px;color:var(--ink50)}
+dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 18px;margin:0}
+dt{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink50)}
+dd{margin:2px 0 0;font-size:14px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink50)}
+.tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(0,126,58,.1);color:#026630}
+.empty{color:var(--ink50);font-size:13px}
+@media print{.top{background:#fff;color:#000;border-bottom:2px solid var(--g)}.top a{display:none}}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.patient-nav{position:relative;height:auto;display:flex;flex-wrap:wrap;gap:4px;padding:8px}.patient-nav b{width:100%}.patient-nav a{padding:6px}}
+</style>
+</head>
+<body>
+<div class="layout"><aside class="patient-nav"><b><img src="{% static 'img/logo.png' %}" alt="Logo MI-AINA" style="width:42px;height:42px;object-fit:contain;vertical-align:middle;margin-right:8px">MI-AINA</b><a href="{{ retour }}">Tableau de bord</a><a href="{{ retour }}?view=patients">Patients</a><a href="{{ retour }}?view=consults">Consultations</a><a href="/profile/">Mon profil</a></aside><div><div class="top"><b>MI-AINA - DOSSIER PATIENT</b><a href="{{ retour }}">Retour au tableau de bord</a><a href="{% url 'patient_pdf' code %}">Exporter en PDF</a></div>
+<main>
+  <h1>{{ patient.nom }} {{ patient.prenom }}</h1>
+  <p class="sub">Code {{ code }}{% if patient.csb %} - {{ patient.csb }}{% endif %}</p>
+
+  <div class="card">
+    <h2>Identite et rattachement</h2>
+    <dl>{% for it in ident %}<dt>{{ it.label }}</dt><dd>{{ it.value }}</dd>{% endfor %}</dl>
+  </div>
+
+  <div class="card">
+    <h2>Consultations et ordonnances</h2>
+    {% if consults %}
+    <table>
+      <thead><tr><th>Date</th><th>Motif</th><th>Statut</th><th>Medecin</th><th>Ordonnance</th><th>Suivi / RDV</th></tr></thead>
+      <tbody>
+      {% for c in consults %}
+        <tr>
+          <td>{{ c.date }}</td>
+          <td>{{ c.motif|default:"-" }}</td>
+          <td><span class="tag">{{ c.statut|default:"-" }}</span></td>
+          <td>{{ c.medecin|default:"-" }}</td>
+          <td>{% if c.ordonnance %}{{ c.ordonnance|linebreaksbr }}{% else %}<span class="empty">Aucune ordonnance</span>{% endif %}</td>
+          <td>{% if c.suivi %}{{ c.suivi }}<br>{% endif %}{% if c.rdv %}RDV : {{ c.rdv }}<br>{% endif %}{% if c.remise %}<span class="tag">Remise confirmee</span>{% endif %}{% if c.oriente %}Oriente : {{ c.oriente }}{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="empty">Aucune consultation enregistree pour ce patient.</p>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Mesures IoT</h2>
+    {% if mesures %}
+    <table>
+      <thead><tr><th>Date</th><th>Température infrarouge</th><th>Boîtier</th></tr></thead>
+      <tbody>{% for m in mesures %}<tr><td>{{ m.quand }}</td><td>{% if m.temp %}{{ m.temp }} °C{% else %}—{% endif %}</td><td>{{ m.boitier|default:"-" }}</td></tr>{% endfor %}</tbody>
+    </table>
+    {% else %}<p class="empty">Aucune mesure transmise pour ce patient.</p>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Mes notifications recentes</h2>
+    {% if notifs %}
+      <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7">
+      {% for n in notifs %}<li>{{ n.titre }}{% if n.texte %} - {{ n.texte }}{% endif %}</li>{% endfor %}
+      </ul>
+    {% else %}<p class="empty">Aucune notification.</p>{% endif %}
+  </div>
+</main>
+</div></div>
+</body>
+</html>

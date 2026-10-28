@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mi-AINA · {{ csb.nom }}{% endblock %}
+{% block content %}
+<section class="view" data-view="csb">
+
+  <!-- Bannière photo de Madagascar -->
+  <div class="csb-hero" style="background-image:url('https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=1200&q=60')">
+    <div class="csb-hero-overlay">
+      <p class="mono" style="font-size:10px;letter-spacing:1.6px;color:#BFE3CE;margin-bottom:8px">
+        CENTRE DE SANTÉ DE BASE · <b>{{ csb.code }}</b></p>
+      <h1 style="font-family:var(--serif);font-weight:500;font-size:clamp(26px,3vw,36px);color:#FCFBF5;
+        text-shadow:0 2px 14px rgba(0,0,0,.5)">{{ csb.nom }}</h1>
+      <p style="font-size:13px;color:#D9E6DC;margin-top:6px;display:flex;align-items:center;gap:6px">
+        <i data-lucide="map-pin" style="width:14px;height:14px"></i>{{ csb.district }} · région {{ csb.region }}</p>
+    </div>
+    <div style="position:absolute;top:14px;right:14px;display:flex;gap:10px">
+      {% if user.role == 'PILOTAGE' %}
+      <a class="btn solid" href="{% url 'csb_edit' csb.code %}"><i data-lucide="pencil"></i>Modifier ce CSB</a>
+      {% endif %}
+      <a class="btn ghost" href="/pilotage/?view=csb"><i data-lucide="arrow-left"></i>Retour aux CSB</a>
+    </div>
+  </div>
+
+  <div class="grid-3" style="align-items:start;margin-top:14px">
+
+    <div class="info-card">
+      <h3 style="font-size:14px;display:flex;align-items:center;gap:8px">
+        <i data-lucide="id-card" style="width:16px;height:16px;color:var(--mg-green)"></i>Identification</h3>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line);margin-top:10px"><span style="font-size:12px;color:var(--ink-50)">Code</span><b class="mono">{{ csb.code }}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)"><span style="font-size:12px;color:var(--ink-50)">Nom</span><b>{{ csb.nom }}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)"><span style="font-size:12px;color:var(--ink-50)">District</span><b>{{ csb.district }}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)"><span style="font-size:12px;color:var(--ink-50)">Région</span><b>{{ csb.region }}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)"><span style="font-size:12px;color:var(--ink-50)">Téléphone</span><b>{% if csb.telephone %}{{ csb.telephone }}{% else %}non renseigné{% endif %}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)"><span style="font-size:12px;color:var(--ink-50)">Adresse</span><b>{% if csb.adresse %}{{ csb.adresse }}{% else %}non renseigné{% endif %}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)"><span style="font-size:12px;color:var(--ink-50)">Créé le</span><b>{{ csb.created_at|date:"d/m/Y" }}</b></div>
+    </div>
+
+    <div class="info-card">
+      <h3 style="font-size:14px;display:flex;align-items:center;gap:8px">
+        <i data-lucide="chart-column" style="width:16px;height:16px;color:var(--mg-green)"></i>Activité enregistrée</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+        <div style="background:var(--tint,rgba(0,126,58,.07));border-radius:12px;padding:14px;text-align:center">
+          <b class="mono" style="font-size:24px;color:#026630">{{ agents_pl|length }}</b>
+          <div style="font-size:10px;color:var(--ink-50);margin-top:4px">AGENTS 1ʳᵉ LIGNE</div></div>
+        <div style="background:rgba(193,39,45,.06);border-radius:12px;padding:14px;text-align:center">
+          <b class="mono" style="font-size:24px;color:var(--mg-red)">{{ medecins|length }}</b>
+          <div style="font-size:10px;color:var(--ink-50);margin-top:4px">MÉDECINS</div></div>
+        <div style="background:rgba(28,64,48,.07);border-radius:12px;padding:14px;text-align:center">
+          <b class="mono" style="font-size:24px;color:#1C4030">{{ patients }}</b>
+          <div style="font-size:10px;color:var(--ink-50);margin-top:4px">PATIENTS</div></div>
+        <div style="background:rgba(154,106,31,.08);border-radius:12px;padding:14px;text-align:center">
+          <b class="mono" style="font-size:24px;color:var(--amber)">{{ devices }}</b>
+          <div style="font-size:10px;color:var(--ink-50);margin-top:4px">BOÎTIERS IoT</div></div>
+      </div>
+      <p style="font-size:11.5px;color:var(--ink-50);margin-top:14px;line-height:1.55">
+        Chiffres lus directement dans la base Mi-AINA (personnel rattaché, patients référencés, boîtiers assignés).</p>
+    </div>
+
+    <div class="info-card">
+      <h3 style="font-size:14px;display:flex;align-items:center;gap:8px">
+        <i data-lucide="map-pin" style="width:16px;height:16px;color:var(--mg-green)"></i>Localisation</h3>
+      {% if lat and lng %}
+      <div class="csb-map" style="margin-top:12px">
+        <iframe width="100%" height="160" style="border:0;border-radius:10px" loading="lazy"
+          src="https://www.openstreetmap.org/export/embed.html?bbox={{ lng|add:-0.06 }},{{ lat|add:-0.04 }},{{ lng|add:0.06 }},{{ lat|add:0.04 }}&layer=mapnik&marker={{ lat }},{{ lng }}"></iframe>
+      </div>
+      <p class="mono" style="font-size:11px;margin-top:8px;color:var(--ink-50)">lat {{ lat }} · lng {{ lng }} —
+        {% if coords_source == 'saisies' %}coordonnées saisies pour ce CSB{% else %}coordonnées du district{% endif %}</p>
+      <a class="btn ghost sm" style="margin-top:10px" target="_blank" rel="noopener"
+         href="https://www.openstreetmap.org/?mlat={{ lat }}&mlon={{ lng }}#map=13/{{ lat }}/{{ lng }}">
+        <i data-lucide="external-link"></i>Ouvrir dans OpenStreetMap</a>
+      {% else %}
+      <p style="font-size:12.5px;color:var(--ink-50);margin-top:12px;line-height:1.6">
+        Coordonnées non disponibles en base pour ce district.<br>Le Pilotage peut les saisir via « Modifier ce CSB ».</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;overflow:hidden">
+    <header><div><div class="card-title">Personnel associé</div>
+      <div class="card-sub">{{ personnel_total }} compte{{ personnel_total|pluralize }} rattaché{{ personnel_total|pluralize }} à ce CSB</div></div></header>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="text-align:left;font-size:10px;letter-spacing:1.2px;color:var(--ink-50);text-transform:uppercase;background:rgba(30,42,34,.03)">
+        <th style="padding:11px 16px">Nom</th><th style="padding:11px 16px">Rôle</th>
+        <th style="padding:11px 16px">Identifiant</th><th style="padding:11px 16px">Statut</th></tr></thead>
+      <tbody>
+      {% for p in agents_pl %}{% include "csb/_ligne_personnel.html" %}{% endfor %}
+      {% for p in medecins %}{% include "csb/_ligne_personnel.html" %}{% endfor %}
+      {% for p in pilotage %}{% include "csb/_ligne_personnel.html" %}{% endfor %}
+      {% if not personnel_total %}
+        <tr><td colspan="4" style="padding:24px 16px;text-align:center;color:var(--ink-50)">
+          Aucun compte n'est encore rattaché à ce CSB — les agents apparaîtront dès leur inscription validée.</td></tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+
+{% block page_js %}
+<script src="{% static 'static/js/dashboards/csb_detail_nav.js' %}" defer></script>
+{% endblock %}

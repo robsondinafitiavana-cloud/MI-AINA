@@ -1,0 +1,48 @@
+<div class="card chat" id="chatCard"
+     data-thread="{{ active_thread_id }}"
+     data-correspondant="{{ thread_nom }}">
+  <div class="chat-head">
+    <span class="p-av {% if thread_online %}g{% else %}n{% endif %}" id="chatAv">{{ thread_initiales }}</span>
+    <div style="flex:1;min-width:0">
+      <b style="font-size:13px" id="chatNom">{{ thread_nom }}</b>
+      <div style="font-size:10.5px;color:var(--ink-50)" id="chatRole">{{ thread_role }}</div>
+    </div>
+    <button class="ci-btn" data-goto="visio" aria-label="Visio"><i data-lucide="video"></i></button>
+  </div>
+
+  <div class="chat-msgs" id="chatMsgs">
+    <p style="text-align:center;font-size:11.5px;color:var(--ink-50);padding:20px 10px">Chargement de la conversation…</p>
+  </div>
+
+  <div class="chat-foot">
+    <!-- Barre de réponse (citée) -->
+    <div id="replyBar" hidden style="display:flex;align-items:center;gap:9px;background:var(--field);
+      border-left:3px solid var(--mg-green);border-radius:8px;padding:8px 12px;margin-bottom:8px">
+      <i data-lucide="corner-down-right" style="width:13px;height:13px;color:var(--mg-green)"></i>
+      <span id="replyPreview" style="flex:1;font-size:11.5px;color:var(--ink-70);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+      <button type="button" id="replyCancel" style="color:var(--ink-50)"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+    </div>
+
+    <!-- Aperçu fichier avant envoi -->
+    <div id="fileBar" hidden style="display:flex;align-items:center;gap:9px;background:var(--field);
+      border-radius:8px;padding:8px 12px;margin-bottom:8px">
+      <i data-lucide="paperclip" style="width:14px;height:14px;color:var(--amber)"></i>
+      <span id="filePreview" style="flex:1;font-size:11.5px;color:var(--ink-70);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+      <button type="button" id="fileCancel" style="color:var(--ink-50)"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+    </div>
+
+    <!-- Enregistrement vocal -->
+    <div class="rec-bar" id="recBar" hidden>
+      <span class="rec"></span><span id="recTime">0:00</span> · NOTE VOCALE EN MALAGASY
+      <button type="button" id="recStop"><i data-lucide="square" style="width:13px;height:13px"></i> Arrêter</button>
+    </div>
+
+    <form class="chat-input" id="chatForm" enctype="multipart/form-data">
+      <button type="button" class="ci-btn" id="voiceBtn" aria-label="Note vocale"><i data-lucide="mic"></i></button>
+      <button type="button" class="ci-btn" id="fileBtn" aria-label="Joindre un fichier"><i data-lucide="paperclip"></i></button>
+      <input type="file" id="fileInput" hidden>
+      <input id="chatTxt" placeholder="Écrire un message…" autocomplete="off">
+      <button type="submit" class="ci-btn send" aria-label="Envoyer"><i data-lucide="send"></i></button>
+    </form>
+  </div>
+</div>

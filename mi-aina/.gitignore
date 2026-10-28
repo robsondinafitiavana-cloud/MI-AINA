@@ -1,0 +1,35 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environnements virtuels
+venv/
+.venv/
+env/
+
+# Django et bases de données locales
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Secrets et variables d'environnement
+.env
+.env.*
+!.env.example
+
+# Médias et données personnelles
+media/
+private/
+*.sqlite3
+
+# Dataset à vérifier avant publication
+disease_symptoms_dataset.csv
+
+# IDE
+.vscode/
+.idea/
+
+# Fichiers générés
+.DS_Store
+Thumbs.db

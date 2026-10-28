@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ fiche.name }} · Prévention MI-AINA{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/prevention.css' %}">{% endblock %}
+{% block content %}
+<main class="prevention-page prevention-detail">
+  <nav class="prevention-breadcrumb" aria-label="Fil d’Ariane"><a href="{% url 'prevention:list' %}"><i data-lucide="arrow-left"></i> Toutes les maladies</a><span>/</span><span>{{ fiche.name }}</span></nav>
+  <header class="prevention-detail-hero">
+    <span class="prevention-kicker"><i data-lucide="shield-plus"></i> FICHE DE PRÉVENTION</span>
+    <h1>{{ fiche.name }}</h1>
+    <p>Maladie compatible proposée par l’aide IA : cette fiche informe sur les précautions disponibles et ne confirme pas un diagnostic.</p>
+  </header>
+
+  <aside class="prevention-notice"><i data-lucide="stethoscope"></i><p>Un professionnel de santé doit confirmer toute hypothèse clinique. En cas de signe d’alerte ou d’aggravation, orientez la personne vers un médecin.</p></aside>
+
+  <div class="prevention-detail-grid">
+    <section class="prevention-info-card prevention-measures-card">
+      <div class="prevention-section-heading"><span class="prevention-section-icon green"><i data-lucide="list-checks"></i></span><div><span class="prevention-kicker">DONNÉES DU FICHIER INITIAL</span><h2>Précautions disponibles</h2></div></div>
+      {% with measures=fiche.precautions.all %}
+        {% if measures %}<ol class="prevention-measures">{% for measure in measures %}<li>{{ measure.text }}</li>{% endfor %}</ol>
+        {% else %}<p class="prevention-unavailable">Information non disponible.</p>{% endif %}
+      {% endwith %}
+    </section>
+
+  </div>
+</main>
+{% endblock %}
+{% block page_js %}<script src="{% static 'js/prevention/shell.js' %}"></script><script>window.lucide?.createIcons?.();</script>{% endblock %}

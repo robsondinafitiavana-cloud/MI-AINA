@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Prévention des maladies · MI-AINA{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/prevention.css' %}">{% endblock %}
+{% block content %}
+<main class="prevention-page">
+  <header class="prevention-hero">
+    <span class="prevention-kicker"><i data-lucide="shield-plus"></i> RESSOURCE DE PRÉVENTION</span>
+    <h1>Prévenir, <em>protéger.</em></h1>
+    <p>Consultez les précautions disponibles par maladie. Les propositions de l’aide IA restent indicatives et ne constituent pas un diagnostic.</p>
+    <form class="prevention-search" method="get" action="{% url 'prevention:list' %}" role="search">
+      <i data-lucide="search" aria-hidden="true"></i>
+      <label class="sr-only" for="preventionQuery">Rechercher une maladie</label>
+      <input id="preventionQuery" name="q" value="{{ query }}" placeholder="Rechercher une maladie…" autocomplete="off">
+      {% if query %}<a class="prevention-clear" href="{% url 'prevention:list' %}">Effacer</a>{% endif %}
+      <button type="submit">Rechercher</button>
+    </form>
+  </header>
+
+  <section class="prevention-results" aria-labelledby="preventionResultsTitle">
+    <div class="prevention-results-head">
+      <div><span class="prevention-kicker">RÉPERTOIRE</span><h2 id="preventionResultsTitle">Maladies disponibles</h2></div>
+      <span class="prevention-count">{{ page.paginator.count }} fiche{{ page.paginator.count|pluralize:"s" }}{% if query %} · recherche « {{ query }} »{% else %} sur {{ total_fiches }}{% endif %}</span>
+    </div>
+    {% if page.object_list %}
+      <div class="prevention-grid">
+        {% for fiche in page.object_list %}
+          <a class="prevention-card" href="{% url 'prevention:detail' fiche.slug %}">
+            <span class="prevention-card-icon"><i data-lucide="leaf"></i></span>
+            <span class="prevention-card-copy"><strong>{{ fiche.name }}</strong><small>{{ fiche.precautions.count }} précaution{{ fiche.precautions.count|pluralize:"s" }} disponible{{ fiche.precautions.count|pluralize:"s" }}</small></span>
+            <i class="prevention-card-arrow" data-lucide="arrow-up-right" aria-hidden="true"></i>
+          </a>
+        {% endfor %}
+      </div>
+      {% if page.has_other_pages %}
+        <nav class="prevention-pagination" aria-label="Pages du répertoire">
+          {% if page.has_previous %}<a href="?q={{ query|urlencode }}&page={{ page.previous_page_number }}">← Précédent</a>{% else %}<span></span>{% endif %}
+          <span>Page {{ page.number }} / {{ page.paginator.num_pages }}</span>
+          {% if page.has_next %}<a href="?q={{ query|urlencode }}&page={{ page.next_page_number }}">Suivant →</a>{% else %}<span></span>{% endif %}
+        </nav>
+      {% endif %}
+    {% else %}
+      <div class="prevention-empty"><i data-lucide="search-x"></i><h3>Aucune fiche trouvée</h3><p>{% if query %}Essaie un autre nom de maladie.{% else %}Aucune fiche n’a encore été importée.{% endif %}</p></div>
+    {% endif %}
+  </section>
+  <aside class="prevention-disclaimer"><i data-lucide="circle-info"></i><p>Les précautions proviennent du fichier initial fourni. Les autres informations médicales restent indiquées comme indisponibles tant qu’une source vérifiée n’est pas ajoutée.</p></aside>
+</main>
+{% endblock %}
+{% block page_js %}<script src="{% static 'js/prevention/shell.js' %}"></script><script>window.lucide?.createIcons?.();</script>{% endblock %}

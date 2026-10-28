@@ -1,0 +1,5 @@
+# Optional offline MLP training/inference dependencies; kept separate from Django.
+pandas>=2.1,<3
+scikit-learn>=1.4,<2
+joblib>=1.3,<2
+tensorflow==2.16.2

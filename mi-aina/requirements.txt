@@ -1,0 +1,10 @@
+# MI-AINA — Plateforme Nationale de Santé · Madagasikara
+Django==5.2.13
+Pillow>=10.0
+reportlab>=4.0
+channels==4.2.2
+daphne==4.2.1
+faster-whisper==1.0.3      # STT offline (modèle small)
+edge-tts==6.1.19           # TTS gratuit (voix Microsoft)
+requests==2.32.3           # API Ollama locale
+pypdf>=5.0                # Extraction locale du texte des PDF pour AINA

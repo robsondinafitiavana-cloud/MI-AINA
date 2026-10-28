@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi-AINA · Portail National de Santé · Créer un compte</title>
+<link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<meta name="mi-brand-logo" content="{% static 'img/logo.png' %}">
+<script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+<script>window.lucide || document.write('<script src="https://cdn.jsdelivr.net/npm/lucide@0.462.0/dist/umd/lucide.min.js"><\/script>');</script>
+
+<style>
+/* ================= FONDATIONS (identiques a login.html) ================= */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --mg-green:#007E3A; --mg-red:#C1272D;
+  --paper:#F4F1E9; --sheet:#FCFBF5; --field:#FFFDF8;
+  --ink:#1E2A22; --ink-70:rgba(30,42,34,.7); --ink-50:rgba(30,42,34,.52); --ink-35:rgba(30,42,34,.35);
+  --line:rgba(30,42,34,.13); --line-strong:rgba(30,42,34,.22);
+  --accent:#007E3A; --amber:#9A6A1F;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'Inter',sans-serif;
+  --serif:'Montserrat',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;align-items:center;padding:clamp(20px,4vw,52px) 18px 60px;
+  background-image:radial-gradient(rgba(30,42,34,.055) 1px,transparent 1px);background-size:26px 26px}
+.mono{font-family:var(--mono)}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+#id_role{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+
+/* ---------- En-tete ---------- */
+.top{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:30px}
+.brand{display:flex;align-items:center;gap:13px}
+.brand-logo{width:42px;height:42px;flex:none}
+.brand-logo svg{width:100%;height:100%;display:block;border-radius:10px;box-shadow:0 2px 8px rgba(30,42,34,.12)}
+.brand-name{font-family:var(--serif);font-weight:600;font-size:19px;letter-spacing:.3px;line-height:1}
+.brand-name span{color:var(--mg-green)}
+.brand-sub{font-family:var(--mono);font-size:8.5px;letter-spacing:1.3px;color:var(--ink-50);margin-top:4px}
+.back-login{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink-70);
+  border:1px solid var(--line);border-radius:999px;padding:7px 14px;transition:border-color .2s,color .2s,background .2s}
+.back-login svg{width:13px;height:13px}
+.back-login:hover{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,transparent)}
+
+/* ---------- Carte ---------- */
+.card{width:100%;max-width:640px;background:var(--sheet);border:1px solid var(--line-strong);border-radius:18px;
+  box-shadow:0 22px 60px rgba(30,42,34,.1);overflow:hidden;animation:cardIn .5s cubic-bezier(.22,.8,.3,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.card-head{padding:30px 34px 6px}
+.card-head h1{font-family:var(--serif);font-weight:500;font-size:clamp(24px,2.6vw,29px);letter-spacing:-.3px}
+.card-head p{margin-top:7px;font-size:13.5px;color:var(--ink-70);line-height:1.5;max-width:48ch}
+
+/* ---------- Stepper ---------- */
+.stepper{display:flex;padding:26px 34px 0;gap:4px}
+.step-tab{flex:1;display:flex;flex-direction:column;gap:9px;position:relative}
+.step-tab .bar{height:3px;border-radius:3px;background:var(--line-strong);overflow:hidden}
+.step-tab .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .4s cubic-bezier(.22,.8,.3,1)}
+.step-tab.done .bar i,.step-tab.active .bar i{width:100%}
+.step-tab .lbl{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:1.1px;
+  text-transform:uppercase;color:var(--ink-35);transition:color .3s}
+.step-tab.active .lbl,.step-tab.done .lbl{color:var(--ink-70)}
+.step-tab .lbl svg{width:11px;height:11px;display:none}
+.step-tab.done .lbl svg{display:block;color:var(--accent)}
+
+/* ---------- Formulaire ---------- */
+form.reg{padding:26px 34px 34px}
+.step{display:none;animation:stepIn .35s cubic-bezier(.22,.8,.3,1)}
+.step.active{display:block}
+@keyframes stepIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+.step h2{font-family:var(--serif);font-weight:500;font-size:19px;margin-bottom:4px}
+.step .step-sub{font-size:12.5px;color:var(--ink-50);margin-bottom:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:16px;position:relative}
+.field label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--ink-70);margin-bottom:8px}
+.field .opt{font-family:var(--sans);text-transform:none;letter-spacing:0;color:var(--ink-35);font-size:11px}
+.field input,.field select{width:100%;height:47px;background:var(--field);border:1px solid var(--line-strong);border-radius:8px;
+  padding:0 14px;font-family:var(--sans);font-size:14px;color:var(--ink);transition:border-color .2s,box-shadow .2s;appearance:none}
+.field select{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%231E2A22" stroke-opacity=".4" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>');
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.field input::placeholder{color:var(--ink-35)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
+.field.invalid input,.field.invalid select{border-color:var(--mg-red);box-shadow:0 0 0 3px rgba(193,39,45,.13)}
+.field .err{display:none;font-size:11.5px;color:var(--mg-red);margin-top:7px;font-weight:500}
+.field.invalid .err{display:flex;align-items:center;gap:5px}
+.field.invalid .err svg{width:12px;height:12px;flex:none}
+.field .hint{font-size:11px;color:var(--ink-50);margin-top:6px}
+
+/* -- mot de passe -- */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.eye-btn{position:absolute;right:5px;top:5px;width:37px;height:37px;border:none;background:transparent;border-radius:6px;
+  display:grid;place-items:center;cursor:pointer;color:var(--ink-50);transition:color .2s,background .2s}
+.eye-btn:hover{color:var(--ink);background:rgba(30,42,34,.06)}
+.eye-btn svg{width:16px;height:16px}
+.eye-btn .icon-off{display:none}
+.eye-btn.show .icon-on{display:none}
+.eye-btn.show .icon-off{display:block}
+.pw-meter{display:flex;gap:4px;margin-top:9px}
+.pw-meter i{flex:1;height:4px;border-radius:3px;background:var(--line-strong);transition:background .25s}
+.pw-meter-label{font-size:11px;color:var(--ink-50);margin-top:6px;transition:color .25s}
+
+/* -- role : cartes -- */
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.role-card{border:1px solid var(--line-strong);border-radius:12px;padding:16px 15px;text-align:left;cursor:pointer;
+  transition:border-color .25s,background .25s,transform .1s;position:relative}
+.role-card:active{transform:scale(.99)}
+.role-card .ic{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;margin-bottom:11px;
+  background:rgba(30,42,34,.06);color:var(--ink-50);transition:background .25s,color .25s}
+.role-card .ic svg{width:18px;height:18px}
+.role-card b{display:block;font-size:14px}
+.role-card span{display:block;font-size:11.5px;color:var(--ink-50);margin-top:3px;line-height:1.4}
+.role-card.active{border-color:var(--role-c);background:color-mix(in srgb,var(--role-c) 7%,transparent)}
+.role-card.active .ic{background:var(--role-c);color:#FCFBF5}
+.role-card .check{position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;border:1px solid var(--line-strong);
+  display:grid;place-items:center;background:var(--field);transition:background .2s,border-color .2s}
+.role-card .check svg{width:11px;height:11px;color:#FCFBF5;opacity:0;transition:opacity .15s}
+.role-card.active .check{background:var(--role-c);border-color:var(--role-c)}
+.role-card.active .check svg{opacity:1}
+
+/* -- nav -- */
+.step-nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:9px;height:48px;padding:0 22px;border-radius:8px;font-size:14px;font-weight:600;
+  cursor:pointer;transition:background .2s,color .2s,box-shadow .2s,transform .1s;border:1px solid transparent}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;border-color:var(--line-strong);color:var(--ink-70)}
+.btn.ghost:hover{border-color:var(--ink-35);color:var(--ink)}
+.btn.solid{background:var(--accent);color:#FCFBF5;margin-left:auto;position:relative}
+.btn.solid:hover{background:color-mix(in srgb,var(--accent) 86%,#1E2A22);box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 30%,transparent)}
+.btn.solid svg{width:16px;height:16px;transition:transform .25s}
+.btn.solid:hover svg{transform:translateX(3px)}
+.btn .spinner{display:none;width:17px;height:17px;border:2px solid rgba(252,251,245,.35);border-top-color:#FCFBF5;
+  border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn.loading{pointer-events:none}
+.btn.loading .btn-label,.btn.loading svg:not(.spinner){display:none}
+.btn.loading .spinner{display:block}
+
+/* -- erreurs globales -- */
+.global-err{display:none;align-items:flex-start;gap:10px;background:rgba(193,39,45,.08);border:1px solid rgba(193,39,45,.28);
+  color:#8E1E23;border-radius:10px;padding:13px 15px;font-size:13px;line-height:1.5;margin:0 34px 0}
+.global-err.show{display:flex;animation:shakeErr .4s ease}
+.global-err svg{width:16px;height:16px;flex:none;margin-top:1px}
+@keyframes shakeErr{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+
+.footnote{width:100%;max-width:640px;text-align:center;margin-top:20px;font-size:12.5px;color:var(--ink-50)}
+
+@media (max-width:640px){
+  .grid2{grid-template-columns:1fr}
+  .role-cards{grid-template-columns:1fr}
+  form.reg{padding:22px 20px 26px}
+  .card-head{padding:24px 20px 4px}
+  .stepper{padding:20px 20px 0}
+  .global-err{margin:0 20px}
+  .step-tab .lbl span{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Finition de marque MI-AINA, partagée avec la connexion. */
+body{background:radial-gradient(ellipse at 82% 8%,rgba(0,126,58,.085),transparent 32%),radial-gradient(rgba(30,42,34,.04) 1px,transparent 1px),var(--paper)}
+.brand-name,.card-head h1,.step h2,.role-card b{font-family:var(--serif);font-weight:700}
+.brand-name{letter-spacing:-.4px}
+.card{border-color:rgba(30,42,34,.12);border-radius:22px;box-shadow:0 28px 75px rgba(30,42,34,.12)}
+.card-head{padding-top:27px}
+.register-hero{display:grid;grid-template-columns:minmax(0,1fr) 146px;align-items:center;gap:6px}
+.register-hero img{width:100%;max-height:112px;object-fit:contain;filter:drop-shadow(0 8px 12px rgba(30,42,34,.08));animation:artFloat 5s ease-in-out infinite}
+@keyframes artFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.stepper{padding-top:19px}
+.step-tab .bar{height:4px;background:rgba(30,42,34,.12)}
+.step-tab .bar i{background:linear-gradient(90deg,#007E3A,#39A96B)}
+.field input,.field select{border-radius:10px;height:49px}
+.role-card{border-radius:14px;background:rgba(255,255,255,.42)}
+.role-card.active{box-shadow:0 8px 20px color-mix(in srgb,var(--role-c) 12%,transparent)}
+.btn{border-radius:10px}
+.btn.solid{box-shadow:0 8px 18px color-mix(in srgb,var(--accent) 18%,transparent)}
+.global-err{border-radius:12px;box-shadow:0 8px 22px rgba(193,39,45,.07)}
+.field .err{align-items:center;gap:6px;padding:7px 9px;border-radius:8px;background:rgba(193,39,45,.055)}
+.footnote{line-height:1.55}
+@media(max-width:560px){.register-hero{grid-template-columns:minmax(0,1fr) 96px}.register-hero img{max-height:86px}}
+@media(prefers-reduced-motion:reduce){.register-hero img{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">
+    <span class="brand-logo" data-logo aria-hidden="true"></span>
+    <div>
+      <div class="brand-name">Mi-<span>AINA</span></div>
+      <div class="brand-sub">PORTAIL NATIONAL DE SANTÉ · MADAGASIKARA</div>
+    </div>
+  </div>
+  <a class="back-login" href="{% url 'login' %}"><i data-lucide="arrow-left"></i>Se connecter</a>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="register-hero"><div><h1>Créer un compte</h1>
+    <p>Réservé au personnel de terrain et aux médecins. Votre demande sera examinée par l’équipe de pilotage avant activation.</p></div>
+    <img src="{% static 'img/miaina-auth-illustration.svg' %}" alt="Illustration de télémédecine MI-AINA" aria-hidden="true"></div>
+  </div>
+
+  <nav class="stepper" aria-label="Etapes de l'inscription">
+    <div class="step-tab active" data-tab="1"><div class="bar"><i></i></div><span class="lbl"><i data-lucide="check"></i><span>1 · Informations</span></span></div>
+    <div class="step-tab" data-tab="2"><div class="bar"><i></i></div><span class="lbl"><i data-lucide="check"></i><span>2 · Profil</span></span></div>
+    <div class="step-tab" data-tab="3"><div class="bar"><i></i></div><span class="lbl"><i data-lucide="check"></i><span>3 · Localisation</span></span></div>
+    <div class="step-tab" data-tab="4"><div class="bar"><i></i></div><span class="lbl"><i data-lucide="check"></i><span>4 · Compte</span></span></div>
+  </nav>
+
+  <div class="global-err" id="globalErr"><i data-lucide="alert-triangle"></i><span id="globalErrTxt"></span></div>
+
+  <form class="reg" method="post" action="{% url 'register' %}" id="regForm" novalidate>
+    {% csrf_token %}
+
+    <!-- ============ ETAPE 1 - Informations personnelles ============ -->
+    <section class="step active" data-step="1">
+      <h2>Informations personnelles</h2>
+      <p class="step-sub">Vos coordonnees de base.</p>
+
+      <div class="grid2">
+        <div class="field {% if form.prenom.errors %}invalid{% endif %}">
+          <label for="{{ form.prenom.id_for_label }}">Prenom</label>
+          {{ form.prenom }}
+          <span class="err"><i data-lucide="alert-circle"></i>{{ form.prenom.errors.0 }}</span>
+        </div>
+        <div class="field {% if form.nom.errors %}invalid{% endif %}">
+          <label for="{{ form.nom.id_for_label }}">Nom</label>
+          {{ form.nom }}
+          <span class="err"><i data-lucide="alert-circle"></i>{{ form.nom.errors.0 }}</span>
+        </div>
+      </div>
+      <div class="field {% if form.telephone.errors %}invalid{% endif %}">
+        <label for="{{ form.telephone.id_for_label }}">Telephone <span class="opt">(facultatif)</span></label>
+        {{ form.telephone }}
+        <span class="err"><i data-lucide="alert-circle"></i>{{ form.telephone.errors.0 }}</span>
+      </div>
+
+      <div class="step-nav">
+        <span></span>
+        <button type="button" class="btn solid" data-next><span class="btn-label">Continuer</span><i data-lucide="arrow-right"></i><span class="spinner"></span></button>
+      </div>
+    </section>
+
+    <!-- ============ ETAPE 2 - Profil professionnel ============ -->
+    <section class="step" data-step="2">
+      <h2>Profil professionnel</h2>
+      <p class="step-sub">Choisissez votre role, puis renseignez votre identifiant professionnel.</p>
+
+      {{ form.role }}
+      <div class="role-cards" id="roleCards">
+        <button type="button" class="role-card" data-role="PREMIERE_LIGNE" style="--role-c:#007E3A" aria-pressed="false">
+          <span class="check"><i data-lucide="check"></i></span>
+          <span class="ic"><i data-lucide="scan-line"></i></span>
+          <b>Premiere ligne</b>
+          <span>Agent communautaire · Infirmier · Sage-femme</span>
+        </button>
+        <button type="button" class="role-card" data-role="MEDECIN" style="--role-c:#C1272D" aria-pressed="false">
+          <span class="check"><i data-lucide="check"></i></span>
+          <span class="ic"><i data-lucide="stethoscope"></i></span>
+          <b>Medecin</b>
+          <span>Généraliste · Spécialiste · Médecin de garde</span>
+        </button>
+      </div>
+
+      <div class="field {% if form.identifiant.errors %}invalid{% endif %}">
+        <label for="{{ form.identifiant.id_for_label }}" id="identLabel">Matricule</label>
+        {{ form.identifiant }}
+        <span class="hint" id="identHint">Format : MG-T-XXXX</span>
+        <span class="err"><i data-lucide="alert-circle"></i>{{ form.identifiant.errors.0 }}</span>
+      </div>
+
+      <div class="step-nav">
+        <button type="button" class="btn ghost" data-back><i data-lucide="arrow-left"></i><span class="btn-label">Retour</span></button>
+        <button type="button" class="btn solid" data-next><span class="btn-label">Continuer</span><i data-lucide="arrow-right"></i><span class="spinner"></span></button>
+      </div>
+    </section>
+
+    <!-- ============ ETAPE 3 - Localisation ============ -->
+    <section class="step" data-step="3">
+      <h2>Localisation</h2>
+      <p class="step-sub">Votre region de rattachement, puis votre structure.</p>
+
+      <div class="grid2">
+        <div class="field {% if form.region.errors %}invalid{% endif %}">
+          <label for="{{ form.region.id_for_label }}">Region</label>
+          {{ form.region }}
+          <span class="err"><i data-lucide="alert-circle"></i>{{ form.region.errors.0 }}</span>
+        </div>
+        <div class="field {% if form.district.errors %}invalid{% endif %}">
+          <label for="{{ form.district.id_for_label }}">District</label>
+          {{ form.district }}
+          <span class="err"><i data-lucide="alert-circle"></i>{{ form.district.errors.0 }}</span>
+        </div>
+      </div>
+
+      <div class="field {% if form.csb.errors %}invalid{% endif %}" id="fieldCsb">
+        <label for="id_csb">CSB principal <span class="opt">(facultatif pour un médecin rattaché à un hôpital)</span></label>
+        <select name="csb" id="id_csb">
+          <option value="">— Sélectionner une CSB —</option>
+          {% for csb in form.fields.csb.queryset %}
+          <option value="{{ csb.pk }}" data-region="{{ csb.region }}" data-district="{{ csb.district }}" {% if form.csb.value|stringformat:"s" == csb.pk|stringformat:"s" %}selected{% endif %}>{{ csb.nom }} · {{ csb.district }} · {{ csb.region }}</option>
+          {% endfor %}
+        </select>
+        <span class="hint">Pour un médecin, sélectionnez un CSB ou renseignez l’établissement ci-dessous.</span>
+        <span class="err"><i data-lucide="alert-circle"></i>{{ form.csb.errors.0 }}</span>
+      </div>
+
+      <div class="field {% if form.etablissement.errors %}invalid{% endif %}" id="fieldEtab" hidden>
+        <label for="{{ form.etablissement.id_for_label }}">Établissement hospitalier</label>
+        {{ form.etablissement }}
+        <span class="hint">CHU, CHR, ESRAN, cabinet…</span>
+        <span class="err"><i data-lucide="alert-circle"></i>{{ form.etablissement.errors.0 }}</span>
+      </div>
+
+      <div class="step-nav">
+        <button type="button" class="btn ghost" data-back><i data-lucide="arrow-left"></i><span class="btn-label">Retour</span></button>
+        <button type="button" class="btn solid" data-next><span class="btn-label">Continuer</span><i data-lucide="arrow-right"></i><span class="spinner"></span></button>
+      </div>
+    </section>
+
+    <!-- ============ ETAPE 4 - Compte ============ -->
+    <section class="step" data-step="4">
+      <h2>Creer votre mot de passe</h2>
+      <p class="step-sub">8 caracteres minimum. Vous devrez le confirmer.</p>
+
+      <div class="field {% if form.password1.errors %}invalid{% endif %}">
+        <label for="{{ form.password1.id_for_label }}">Mot de passe</label>
+        <div class="pw-wrap">
+          {{ form.password1 }}
+          <button type="button" class="eye-btn" data-eye-for="{{ form.password1.id_for_label }}" aria-label="Afficher le mot de passe">
+            <i data-lucide="eye" class="icon-on"></i><i data-lucide="eye-off" class="icon-off"></i>
+          </button>
+        </div>
+        <div class="pw-meter"><i></i><i></i><i></i><i></i></div>
+        <div class="pw-meter-label" id="pwMeterLabel">Saisissez un mot de passe</div>
+        <span class="err"><i data-lucide="alert-circle"></i>{{ form.password1.errors.0 }}</span>
+      </div>
+
+      <div class="field {% if form.password2.errors %}invalid{% endif %}">
+        <label for="{{ form.password2.id_for_label }}">Confirmation</label>
+        <div class="pw-wrap">
+          {{ form.password2 }}
+          <button type="button" class="eye-btn" data-eye-for="{{ form.password2.id_for_label }}" aria-label="Afficher le mot de passe">
+            <i data-lucide="eye" class="icon-on"></i><i data-lucide="eye-off" class="icon-off"></i>
+          </button>
+        </div>
+        <span class="err"><i data-lucide="alert-circle"></i>{{ form.password2.errors.0 }}</span>
+      </div>
+
+      <div class="step-nav">
+        <button type="button" class="btn ghost" data-back><i data-lucide="arrow-left"></i><span class="btn-label">Retour</span></button>
+        <button type="submit" class="btn solid" id="submitBtn"><span class="btn-label">Creer mon compte</span><i data-lucide="user-plus"></i><span class="spinner"></span></button>
+      </div>
+    </section>
+
+  </form>
+</div>
+
+<p class="footnote">Un compte Pilotage ? Il est créé directement par le Ministère — contactez votre administrateur.</p>
+
+{{ form.non_field_errors|json_script:"mi-reg-nonfield" }}
+<script src="{% static 'js/register.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<div class="modal-wrap" id="repModal" hidden>
+  <div class="modal">
+    <div class="modal-head"><b>Nouveau signalement sanitaire</b>
+      <button data-close aria-label="Fermer"><i data-lucide="x"></i></button></div>
+    <form class="modal-body" id="repForm">
+      <div class="f-group"><label for="repType">Type</label>
+        <select id="repType">
+          <option>Paludisme suspecté</option><option>Gastro-entérite</option>
+          <option>Rougeole (suspicion)</option><option>Dengue</option>
+          <option>Autre événement</option>
+        </select></div>
+      <div class="f-group"><label for="repVillage">Village / Fokontany</label>
+        <input id="repVillage" placeholder="Ampasimanjeva" required></div>
+      <div class="f-group"><label for="repN">Nombre de cas estimé</label>
+        <input id="repN" type="number" min="1" value="1" required></div>
+      <div class="f-group" style="margin-bottom:2px"><label for="repNote">Précisions</label>
+        <textarea id="repNote" placeholder="Symptômes observés, personnes à risque, actions déjà prises…"></textarea></div>
+      <div class="modal-foot" style="margin:18px -20px -20px">
+        <button type="button" class="btn ghost" data-close>Annuler</button>
+        <button type="submit" class="btn solid"><i data-lucide="megaphone"></i>Transmettre</button>
+      </div>
+    </form>
+  </div>
+</div>

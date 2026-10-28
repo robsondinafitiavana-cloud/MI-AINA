@@ -1,0 +1,82 @@
+{% load static %}
+<section class="view profile-view" data-view="profil" {% if profile_dashboard %}hidden{% endif %}>
+  <header class="view-head profile-view-head">
+    <div><h2 class="vh-title">Mon profil</h2><p class="vh-sub">Vos informations de compte et votre rattachement.</p></div>
+    <a class="btn solid" href="{% url 'change_password' %}"><i data-lucide="key-round"></i>Changer le mot de passe</a>
+  </header>
+
+  <div class="profile-layout">
+    <div class="profile-stack">
+      <section class="profile-card profile-identity">
+        <div class="profile-person">
+          <img class="profile-avatar" src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static 'img/default-avatar.svg' %}{% endif %}" alt="Photo de profil de {{ user.prenom }} {{ user.nom }}">
+          <div class="profile-person-copy"><h3>{% firstof user.prenom user.nom %} {{ user.nom }}</h3><p>{{ user.get_role_display }} · {{ user.rattachement|default:'Administration nationale' }}</p></div>
+        </div>
+        <dl class="profile-details">
+          <div><dt><i data-lucide="user-round"></i>Nom</dt><dd>{{ user.nom|default:'Non renseigné' }}</dd></div>
+          <div><dt><i data-lucide="user-round"></i>Prénom</dt><dd>{{ user.prenom|default:'Non renseigné' }}</dd></div>
+          <div><dt><i data-lucide="mail"></i>Email</dt><dd>{{ user.email|default:'Non renseigné' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="profile-card profile-attachment">
+        <h3 class="profile-card-title"><i data-lucide="map-pin"></i>Rattachement</h3>
+        <p>{% firstof user.rattachement user.csb user.etablissement user.direction 'Aucun rattachement renseigné.' %}</p>
+        {% if user.region %}<div class="profile-location"><i data-lucide="map"></i><span>{{ user.region }}{% if user.district %} · {{ user.district }}{% endif %}</span></div>{% endif %}
+      </section>
+    </div>
+
+    <section class="profile-card profile-photo-card">
+      <h3 class="profile-card-title"><i data-lucide="images"></i>Photo de profil</h3>
+      <p class="profile-card-sub">Ajoutez une photo pour personnaliser votre compte.</p>
+      <form class="profile-photo-form" method="post" enctype="multipart/form-data" action="{% url 'profile' %}">
+        {% csrf_token %}
+        {% if user.photo %}
+        <div class="profile-current-photo"><img src="{{ user.photo.url }}" alt="Photo actuelle"><span><b>Photo actuelle</b><small>Vous pouvez la remplacer ci-dessous.</small></span><i data-lucide="badge-check"></i></div>
+        {% endif %}
+        <label class="profile-dropzone" for="id_photo" tabindex="0" aria-label="Choisir une photo de profil">
+          <span class="profile-drop-icon"><i data-lucide="image-plus"></i></span>
+          <b>Glissez-déposez une photo ici</b>
+          <span>ou <u>parcourez vos fichiers</u></span>
+          <small>JPG ou PNG · sélectionnez une image de profil</small>
+          <input id="id_photo" class="profile-photo-input" type="file" name="photo" accept="image/jpeg,image/png,image/webp">
+        </label>
+        <div class="profile-preview" id="profilePhotoPreview" hidden>
+          <img id="profilePhotoPreviewImage" alt="Aperçu de la nouvelle photo">
+          <div><b id="profilePhotoFileName"></b><small>Nouvelle photo sélectionnée</small></div>
+          <button type="button" id="profilePhotoClear" aria-label="Retirer la photo sélectionnée"><i data-lucide="x"></i></button>
+        </div>
+        {% for error in form.photo.errors %}<p class="profile-form-error"><i data-lucide="circle-alert"></i>{{ error }}</p>{% endfor %}
+        <button class="btn solid profile-save-photo" type="submit"><i data-lucide="save"></i>Enregistrer la photo</button>
+      </form>
+    </section>
+
+    <section class="profile-card profile-access-card">
+      <h3 class="profile-card-title"><i data-lucide="shield-check"></i>Accès</h3>
+      <dl class="profile-details">
+        <div><dt><i data-lucide="briefcase-medical"></i>Rôle</dt><dd><span class="profile-role-chip">{{ user.get_role_display }}</span></dd></div>
+        <div><dt><i data-lucide="fingerprint"></i>Identifiant</dt><dd class="profile-ident">{{ user.identifiant_court|default:user.email }}</dd></div>
+        <div><dt><i data-lucide="settings"></i>Administration</dt><dd><span class="profile-admin-chip">{% if user.is_superuser %}Superuser{% else %}Compte standard{% endif %}</span></dd></div>
+      </dl>
+      <div class="profile-active"><span></span>Compte actif</div>
+      <div class="profile-access-space" aria-hidden="true"></div>
+    </section>
+  </div>
+
+  {% if user.role == 'MEDECIN' %}
+  <section class="profile-card profile-preferences">
+    <div><h3 class="profile-card-title"><i data-lucide="calendar-check"></i>Disponibilité</h3><p class="profile-card-sub">Visible par les agents qui vous adressent un cas.</p></div>
+    <div class="escal-toggle on" id="gardeT" role="button" tabindex="0" aria-pressed="true"><span class="toggle-pill"></span><span class="tt"><b id="gardeLbl">De garde — vous recevez les escalades</b><span>Hors garde, la file est proposée à un confrère disponible.</span></span></div>
+    <p class="profile-card-sub">En mode de garde, les cas critiques vous sont attribués en priorité. Hors garde, la file d’expertise est redirigée vers un médecin disponible.</p>
+  </section>
+  {% elif user.role == 'PREMIERE_LIGNE' %}
+  <section class="profile-card profile-preferences">
+    <div><h3 class="profile-card-title"><i data-lucide="sliders-horizontal"></i>Préférences terrain</h3><p class="profile-card-sub">Réglages de votre espace de travail.</p></div>
+    <div class="profile-preference-list" id="prefBox">
+      <div class="escal-toggle on" role="button" tabindex="0" aria-pressed="true"><span class="toggle-pill"></span><span class="tt"><b><i data-lucide="cloud-off"></i>File hors-ligne automatique</b><span>Les données sont conservées puis synchronisées.</span></span></div>
+      <div class="escal-toggle" role="button" tabindex="0" aria-pressed="false"><span class="toggle-pill"></span><span class="tt"><b><i data-lucide="languages"></i>Interface en malagasy</b><span>Français actuellement.</span></span></div>
+      <div class="escal-toggle" role="button" tabindex="0" aria-pressed="false"><span class="toggle-pill"></span><span class="tt"><b><i data-lucide="wifi"></i>Mode économie de données</b><span>Réduire l’usage réseau.</span></span></div>
+    </div>
+  </section>
+  {% endif %}
+</section>

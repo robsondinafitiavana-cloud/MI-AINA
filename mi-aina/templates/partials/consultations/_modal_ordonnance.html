@@ -1,0 +1,33 @@
+<div class="modal-wrap" id="ordModal" hidden>
+  <div class="modal">
+    <div class="modal-head"><b>Rédiger l'ordonnance</b>
+      <button data-close aria-label="Fermer"><i data-lucide="x"></i></button></div>
+    <form class="modal-body" id="ordForm" data-consult="">
+      <p style="font-size:12.5px;color:var(--ink-50);margin-bottom:14px" id="ordFor"></p>
+      <div class="f-group">
+        <label for="ordMeds">Prescription — une ligne par médicament + posologie</label>
+        <textarea id="ordMeds" required
+          placeholder="Artéméther-Luméfantrine 20/120 mg — 2 cp matin et soir pendant 3 jours&#10;Paracétamol 500 mg — 1 cp si fièvre, max 4/jour"></textarea>
+      </div>
+      <div class="f-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="f-group">
+          <label for="ordSuivi">Suivi</label>
+          <select id="ordSuivi">
+            <option>Contrôle CSB sous 72 h</option>
+            <option>Contrôle agent sous 48 h</option>
+            <option>Réévaluation par visio</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label for="ordDate">Prochain rendez-vous</label>
+          <input id="ordDate" type="date">
+        </div>
+      </div>
+      <div class="modal-foot" style="margin:18px -20px -20px">
+        <button type="button" class="btn ghost" data-close>Annuler</button>
+        <button type="submit" class="btn solid">
+          <i data-lucide="file-signature"></i>Signer &amp; envoyer à l'agent</button>
+      </div>
+    </form>
+  </div>
+</div>

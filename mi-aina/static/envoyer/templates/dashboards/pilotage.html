@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mi-AINA · Espace Pilotage{% endblock %}
+
+{% block content %}
+{{ pending_json|json_script:"data-pending" }}
+{{ users_json|json_script:"data-users" }}
+{{ csb_json|json_script:"data-csb" }}
+{{ alerts_json|json_script:"data-alerts" }}
+{{ regions_json|json_script:"data-regions" }}
+{{ stats_json|json_script:"data-stats" }}
+{{ urls_json|json_script:"data-urls" }}
+{{ stats_full_json|json_script:"data-statsfull" }}
+{{ fils_json|json_script:"data-fils" }}
+{{ pubs_json|json_script:"data-pubs" }}
+{{ forum_json|json_script:"data-forum" }}
+
+<!-- ============ VUE 1 : OVERVIEW (fermée AVANT la suivante !) ============ -->
+<section class="view" data-view="overview">
+  <header class="hero">
+    <div>
+      <p class="hero-kicker mono"><span class="flag"></span>TONGA SOA · RÉPUBLIQUE DE MADAGASIKARA · MINISTERAN'NY FAHASALAMAM-BAHOAKA</p>
+      <h1 id="greetTitle"></h1>
+      <p class="hero-sub" id="greetMsg"></p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn ghost" id="exportBtn"><i data-lucide="file-down"></i>Exporter le rapport</button>
+      <button class="btn solid" data-open-csb><i data-lucide="plus"></i>Nouveau CSB</button>
+    </div>
+  </header>
+
+  <section class="stats">
+    <button class="stat" data-goto="users" style="--tone:#026630;--tint:rgba(0,126,58,.09)">
+      <div class="top"><span class="ic"><i data-lucide="users"></i></span><span class="delta">+18 / sem.</span></div>
+      <div class="val" id="statUsersVal">0</div><div class="lbl">Utilisateurs actifs</div>
+      <div class="hint" id="statUsersHint"></div>
+    </button>
+    <button class="stat" data-goto="pending" style="--tone:#9A6A1F;--tint:rgba(154,106,31,.11)">
+      <div class="top"><span class="ic"><i data-lucide="clock-3"></i></span><span class="delta" id="statPendingDelta">à traiter</span></div>
+      <div class="val" id="statPendingVal">0</div><div class="lbl">Comptes en attente</div>
+      <div class="hint">Inscriptions à valider ou refuser</div>
+    </button>
+    <button class="stat" data-goto="csb" style="--tone:#1C4030;--tint:rgba(28,64,48,.09)">
+      <div class="top"><span class="ic"><i data-lucide="building-2"></i></span><span class="delta">486 recensés</span></div>
+      <div class="val" id="statCsbVal">0</div><div class="lbl">CSB actifs</div>
+      <div class="hint">Connectés au réseau Mi-AINA</div>
+    </button>
+    <button class="stat" data-goto="alerts" style="--tone:#A31F24;--tint:rgba(193,39,45,.08)">
+      <div class="top"><span class="ic"><i data-lucide="siren"></i></span><span class="delta">2 critiques</span></div>
+      <div class="val" id="statAlertsVal">0</div><div class="lbl">Alertes actives</div>
+      <div class="hint">Sécurité &amp; transmissions</div>
+    </button>
+  </section>
+
+  <section class="bento">
+    <div class="card" style="display:flex;flex-direction:column">
+      <header>
+        <div><div class="card-title">Le réseau, en direct</div><div class="card-sub">CSB par région · survolez ou cliquez un point</div></div>
+        <span class="see-all" data-goto="regions">Détail régions</span>
+      </header>
+      <div style="display:flex;gap:10px;padding:8px 14px 14px;flex:1">
+        <div style="flex:1.15;display:flex;flex-direction:column;min-width:0">
+          <svg viewBox="0 0 190 344" aria-label="Carte de Madagascar" style="width:100%;height:auto;flex:1">
+            <defs><pattern id="dotgrid" width="6.5" height="6.5" patternUnits="userSpaceOnUse">
+              <circle cx="1.6" cy="1.6" r="1.05" style="fill:var(--ink)"/></pattern></defs>
+            <path d="M159 2 C165 6 168 14 172 22 C176 32 181 50 183 72 C184 95 180 112 172 126 C165 142 163 148 160 158 C154 178 148 192 143 206 C138 222 135 232 130 244 C125 258 122 268 118 280 C114 296 108 312 100 324 C94 332 84 336 72 338 C62 339 52 340 48 332 C42 322 30 300 22 288 C12 272 6 254 5 240 C6 226 18 216 26 206 C28 196 24 178 22 164 C20 148 24 130 30 116 C36 104 52 100 66 98 C74 96 80 92 82 88 C84 82 78 74 88 66 C100 58 112 52 120 46 C130 40 140 32 148 22 C152 14 154 6 159 2 Z" fill="url(#dotgrid)" opacity=".22"/>
+            <path d="M159 2 C165 6 168 14 172 22 C176 32 181 50 183 72 C184 95 180 112 172 126 C165 142 163 148 160 158 C154 178 148 192 143 206 C138 222 135 232 130 244 C125 258 122 268 118 280 C114 296 108 312 100 324 C94 332 84 336 72 338 C62 339 52 340 48 332 C42 322 30 300 22 288 C12 272 6 254 5 240 C6 226 18 216 26 206 C28 196 24 178 22 164 C20 148 24 130 30 116 C36 104 52 100 66 98 C74 96 80 92 82 88 C84 82 78 74 88 66 C100 58 112 52 120 46 C130 40 140 32 148 22 C152 14 154 6 159 2 Z" fill="none" style="stroke:var(--ink)" stroke-opacity=".4" stroke-width="1"/>
+            <g id="mapDots"></g>
+          </svg>
+          <div style="display:flex;gap:12px;justify-content:center;padding:4px 0 2px;font-family:var(--mono);font-size:9px;letter-spacing:.8px;color:var(--ink-50)">
+            <span><i style="width:7px;height:7px;border-radius:50%;background:var(--mg-green);display:inline-block"></i> ACTIF</span>
+            <span><i style="width:7px;height:7px;border-radius:50%;background:#C98A1F;display:inline-block"></i> SYNC RETARD</span>
+            <span><i style="width:7px;height:7px;border-radius:50%;background:var(--mg-red);display:inline-block"></i> ALERTE</span>
+          </div>
+        </div>
+        <div id="regionPanel" style="flex:1;border-left:1px dashed var(--line);padding:6px 0 6px 16px;display:flex;flex-direction:column;min-width:170px"></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card">
+        <header><div><div class="card-title">Répartition des comptes</div><div class="card-sub">Par rôle</div></div></header>
+        <div class="chart-box" style="height:195px"><canvas id="chartRoles"></canvas></div>
+      </div>
+      <div class="card" style="flex:1">
+        <header><div><div class="card-title">État du système</div><div class="card-sub">Santé de la plateforme</div></div></header>
+        <div style="padding:6px 18px 14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:12.5px"><span style="color:var(--ink-50)">Dernière synchronisation</span><b class="mono" style="display:flex;align-items:center;gap:8px"><span class="sync-dot"></span><span id="sysSync">il y a 12 s</span></b></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:12.5px"><span style="color:var(--ink-50)">Terminaux terrain en ligne</span><b class="mono">1 247</b></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:12.5px"><span style="color:var(--ink-50)">Disponibilité (30 j)</span><b class="mono">99,97 %</b></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:12.5px"><span style="color:var(--ink-50)">Version</span><b class="mono">MI-AINA · v1.0.1</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-row2">
+    <div class="card">
+      <header><div><div class="card-title">Activité des connexions</div><div class="card-sub">14 derniers jours · par rôle</div></div></header>
+      <div class="chart-box"><canvas id="chartActivity"></canvas></div>
+    </div>
+    <div class="card">
+      <header><div><div class="card-title">Demandes d'inscription</div><div class="card-sub" id="pendingPreviewSub"></div></div>
+        <span class="see-all" data-goto="pending">Tout voir</span></header>
+      <div id="pendingPreview"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <header><div><div class="card-title">Alertes récentes</div><div class="card-sub">Sécurité, transmissions et système</div></div>
+      <span class="see-all" data-goto="alerts">Tout voir</span></header>
+    <div id="alertsPreview" style="margin-top:12px"></div>
+  </section>
+</section>
+<!-- ============ FIN OVERVIEW ============ -->
+
+<!-- ============ VUE 2 : CARTE NATIONALE (sœur, pas fille) ============ -->
+<section class="view" id="view-regions" data-view="regions" hidden>
+  <header class="hero">
+    <div>
+      <p class="hero-kicker mono"><span class="flag"></span>FARITANY · CARTOGRAPHIE NATIONALE · MINISTERAN'NY FAHASALAMAM-BAHOAKA</p>
+      <h1>Carte <em>nationale</em>.</h1>
+      <p class="hero-sub">Régions, districts et CSB à leur position réelle — basculez en satellite pour survoler le terrain. <b id="regCount"></b></p>
+    </div>
+    <div class="hero-actions">
+      <div style="display:flex;align-items:center;gap:9px;border:1px solid var(--line-strong);border-radius:999px;background:var(--sheet);padding:6px 6px 6px 15px">
+        <i data-lucide="search" style="width:15px;height:15px;color:var(--ink-35)"></i>
+        <input id="geoSearch" placeholder="Rechercher une région ou un district…"
+          style="border:none;outline:none;background:none;font-family:var(--sans);font-size:13px;width:210px;color:var(--ink)">
+      </div>
+      <button class="btn ghost" id="geoLocBtn"><i data-lucide="crosshair"></i>Ma position</button>
+    </div>
+  </header>
+
+  <section class="bento" style="grid-template-columns:2.1fr 1fr">
+    <div class="card" style="padding:8px">
+      <div id="map" style="height:520px;border-radius:11px;z-index:1"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="flex:1;display:flex;flex-direction:column">
+        <header><div><div class="card-title">Régions</div><div class="card-sub" id="regListSub"></div></div></header>
+        <div id="regionList" style="padding:10px 8px 8px;overflow-y:auto;flex:1;max-height:430px"></div>
+      </div>
+      <div class="card">
+        <header><div><div class="card-title">Panneau région</div><div class="card-sub">Sélection sur la carte</div></div></header>
+        <div id="geoPanel" style="padding:14px 18px 16px">
+          <p style="font-size:12.5px;color:var(--ink-50);line-height:1.55">Cliquez une région sur la liste ou un marqueur sur la carte — les KPIs et districts s'affichent ici.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+<section class="view" id="view-stats" data-view="stats" hidden>
+  <header class="hero">
+    <div>
+      <p class="hero-kicker mono"><span class="flag"></span>FANARAHA-MASO · STATISTIQUES NATIONALES · MI-AINA</p>
+      <h1>Le système en <em>chiffres</em>.</h1>
+      <p class="hero-sub">Toutes les données ci-dessous proviennent du terrain en temps réel — consultations, comptes, signalements.</p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn ghost" id="csvBtn"><i data-lucide="file-spreadsheet"></i>Export CSV</button>
+      <button class="btn solid" id="pdfBtn"><i data-lucide="file-text"></i>Export PDF</button>
+    </div>
+  </header>
+
+  <!-- Carte narrative -->
+  <section class="card" id="storyCard" style="margin-bottom:14px;padding:22px 26px;position:relative;overflow:hidden">
+    <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(0,126,58,.06);pointer-events:none"></div>
+    <p class="mono" style="font-size:9.5px;letter-spacing:1.8px;color:var(--mg-green)">LE CHIFFRE QUI COMPTE · 7 DERNIERS JOURS</p>
+    <h2 id="storyTitle" style="font-family:var(--serif);font-weight:500;font-size:clamp(22px,2.4vw,30px);margin-top:10px;letter-spacing:-.4px;line-height:1.25"></h2>
+    <p id="storyText" style="margin-top:10px;font-size:14px;color:var(--ink-70);max-width:70ch;line-height:1.6"></p>
+  </section>
+
+  <!-- KPI strip -->
+  <section class="stats" id="kpiStrip" style="grid-template-columns:repeat(5,1fr)"></section>
+
+  <!-- 4 charts -->
+  <section class="bento" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <header><div><div class="card-title">Pipeline des consultations</div><div class="card-sub">Répartition par statut</div></div></header>
+      <div class="chart-box" style="height:230px"><canvas id="chPipeline"></canvas></div>
+    </div>
+    <div class="card">
+      <header><div><div class="card-title">Sévérité par région</div><div class="card-sub">Top 8 · consultations</div></div></header>
+      <div class="chart-box" style="height:230px"><canvas id="chSev"></canvas></div>
+    </div>
+    <div class="card">
+      <header><div><div class="card-title">Croissance de la plateforme</div><div class="card-sub">Nouvelles inscriptions · 6 mois</div></div></header>
+      <div class="chart-box" style="height:230px"><canvas id="chGrowth"></canvas></div>
+    </div>
+    <div class="card">
+      <header><div><div class="card-title">Signalements par type</div><div class="card-sub">Cas estimés transmis par le terrain</div></div></header>
+      <div class="chart-box" style="height:230px"><canvas id="chSig"></canvas></div>
+    </div>
+  </section>
+
+  <!-- Tableau régions -->
+  <section class="card" style="margin-top:14px">
+    <header>
+      <div><div class="card-title">Comparatif régional</div><div class="card-sub">Vue consolidée — compatible export DHIS2</div></div>
+      <span class="see-all" data-goto="regions">Voir la carte</span>
+    </header>
+    <div class="table-wrap" style="padding-bottom:4px">
+      <table class="table" id="regionTable">
+        <thead><tr><th>Région</th><th>CSB</th><th>Agents</th><th>Patients</th><th>Consultations</th><th>% critique</th><th>Couverture</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</section>
+<!-- ============ VUE : SURVEILLANCE MADAALERT ============ -->
+<section class="view" id="view-surveillance" data-view="surveillance" hidden>
+  <header class="hero">
+    <div>
+      <p class="hero-kicker mono"><span class="flag"></span>MADAALERT · SURVEILLANCE ÉPIDÉMIOLOGIQUE · TEMPS RÉEL</p>
+      <h1>Vigilance <em>épidémique</em>.</h1>
+      <p class="hero-sub">Les foyers signalés par les agents de première ligne, en direct sur le terrain — rien n'apparaît ici sans déclaration terrain. <b id="madaCount"></b></p>
+    </div>
+    <div class="hero-actions">
+      <div class="pill-filters" id="madaFilters"></div>
+    </div>
+  </header>
+
+  <section class="bento" style="grid-template-columns:2.1fr 1fr">
+    <div class="card" style="padding:8px;position:relative">
+      <div id="madaMap" style="height:540px;border-radius:11px;z-index:1"></div>
+      <div class="geo-count"><i data-lucide="siren" style="width:11px;height:11px"></i><span><b id="foyersCount">0</b> foyers · <b id="casCount" style="color:#F0937F">0</b> cas estimés</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="flex:1;display:flex;flex-direction:column">
+        <header><div><div class="card-title">Panneau foyer</div><div class="card-sub">Cliquez un cercle sur la carte</div></div></header>
+        <div id="madaPanel" style="padding:14px 18px 16px;flex:1">
+          <p style="font-size:12.5px;color:var(--ink-50);line-height:1.55">Cliquez un foyer sur la carte ou dans la liste — le détail complet s'affiche ici.</p>
+        </div>
+      </div>
+            <div class="card">
+        <header><div><div class="card-title">Légende</div><div class="card-sub">Comment le niveau est déterminé</div></div></header>
+        <div style="padding:12px 18px 16px;display:flex;flex-direction:column;gap:9px;font-size:12px;line-height:1.5">
+          <span style="display:flex;align-items:flex-start;gap:9px"><span style="width:13px;height:13px;border-radius:50%;background:var(--mg-red);flex:none;margin-top:2px"></span><span><b style="color:var(--mg-red)">CRITIQUE</b> — déclaré critique par l'agent sur place, ou signalement de 5 cas et plus</span></span>
+          <span style="display:flex;align-items:flex-start;gap:9px"><span style="width:13px;height:13px;border-radius:50%;background:#C98A1F;flex:none;margin-top:2px"></span><span><b style="color:var(--amber)">URGENT</b> — déclaré urgent par l'agent, ou signalement de 3 à 4 cas</span></span>
+          <span style="display:flex;align-items:flex-start;gap:9px"><span style="width:13px;height:13px;border-radius:50%;background:var(--mg-green);flex:none;margin-top:2px"></span><span><b style="color:#026630">PRÉOCCUPANT</b> — foyer sous surveillance (moins de 3 cas)</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card mada-region-card">
+    <header><div><div class="card-title">Foyers par région</div><div class="card-sub">Cliquez une région pour filtrer la liste et centrer la carte · 23 régions</div></div>
+      <button type="button" class="pill" id="madaRegionClear">Toutes les régions</button>
+    </header>
+    <div id="madaRegions" class="mada-regions" aria-label="Filtrer les foyers par région"></div>
+  </section>
+
+  <section class="card">
+    <header><div><div class="card-title">Foyers actifs</div><div class="card-sub" id="madaListSub"></div></div></header>
+    <div id="madaList" style="padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px"></div>
+  </section>
+</section>
+<!-- ============ VUES SECONDAIRES ============ -->
+<section class="view" id="view-pending" data-view="pending" hidden></section>
+<section class="view" id="view-users"   data-view="users"   hidden></section>
+<section class="view" id="view-csb"     data-view="csb"     hidden></section>
+<section class="view" id="view-alerts"  data-view="alerts"  hidden></section>
+{# stats · surveillance · admin → stubs auto-générés par base.html #}
+
+<!-- ============ VUE : PUBLICATIONS (médecins + pilotage) ============ -->
+<section class="view" id="view-publications" data-view="publications" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Publications &amp; formations</h2>
+    <p class="vh-sub">Protocoles et guides publiés par les médecins — le pilotage peut publier à son tour, vers les agents et les médecins.</p></div></header>
+  <div class="card" style="margin-bottom:14px">
+    <header><div><div class="card-title">Publier une directive</div><div class="card-sub">Poussée hors-ligne sur les terminaux des agents et des médecins</div></div></header>
+    <form id="pubForm" style="padding:14px 18px 18px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <label style="height:42px;display:flex;align-items:center;gap:8px;background:var(--field);border:1px solid var(--line-strong);border-radius:9px;padding:0 10px;color:var(--ink-70)">
+          <i data-lucide="file-type-2" style="width:16px;height:16px"></i>
+          <select id="pubType" style="height:32px;background:transparent;border:0;padding:0 2px;font-family:var(--sans);font-size:13px;color:var(--ink);outline:none">
+            <option value="protocole">Protocole</option><option value="texte">Texte</option>
+            <option value="image">Image</option><option value="video">Vidéo</option><option value="pdf">Guide PDF</option>
+          </select>
+        </label>
+        <input id="pubTitle" placeholder="Titre de la publication…" required
+          style="flex:1;min-width:220px;height:42px;background:var(--field);border:1px solid var(--line-strong);border-radius:9px;padding:0 14px;font-family:var(--sans);font-size:13.5px;color:var(--ink);outline:none">
+      </div>
+      <textarea id="pubDesc" placeholder="Consigne nationale, protocole, retour d'expérience…" required
+        style="width:100%;min-height:74px;background:var(--field);border:1px solid var(--line-strong);border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:13px;color:var(--ink);resize:vertical;outline:none;box-sizing:border-box"></textarea>
+      <label class="btn ghost" style="width:max-content;cursor:pointer"><i data-lucide="paperclip"></i><span id="pubFileLabel">Joindre un média</span>
+        <input id="pubFile" type="file" accept="application/pdf,image/*,video/*" hidden></label>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--ink-50);display:flex;align-items:center;gap:6px"><i data-lucide="wifi-off" style="width:12px;height:12px"></i>Pensé hors-ligne : compressé pour la 2G</span>
+        <button type="submit" class="btn solid"><i data-lucide="send"></i>Publier aux agents</button>
+      </div>
+    </form>
+  </div>
+  <div class="card">
+    <header><div><div class="card-title">Fil des publications</div><div class="card-sub" id="feedSub"></div></div>
+      <span class="pill-filters" id="feedFilters"></span></header>
+    <div id="pubFeed" style="padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</section>
+
+<!-- ============ VUE : FORUM MÉDICAL ============ -->
+<section class="view" id="view-forum" data-view="forum" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Forum médical</h2>
+    <p class="vh-sub">Suivi des échanges du réseau — consultez les sujets et réponses, ou participez à la discussion.</p></div></header>
+  <div class="card" style="margin-bottom:14px">
+    <header><div><div class="card-title">Ouvrir un sujet</div><div class="card-sub">Notifié aux médecins et agents abonnés</div></div></header>
+    <form id="forumForm" class="forum-create-form">
+      <input id="forumQ" placeholder="Votre question ou consigne nationale…" required
+        style="height:42px;background:var(--field);border:1px solid var(--line-strong);border-radius:9px;padding:0 14px;font-family:var(--sans);font-size:13.5px;color:var(--ink);outline:none">
+      <input id="forumTags" placeholder="Étiquettes : PALUDISME,POSOLOGIE"
+        style="height:42px;background:var(--field);border:1px solid var(--line-strong);border-radius:9px;padding:0 14px;font-family:var(--sans);font-size:13px;color:var(--ink);outline:none">
+      <button type="submit" class="btn solid" style="align-self:flex-start"><i data-lucide="plus"></i>Publier le sujet</button>
+    </form>
+  </div>
+  <div class="forum-section" id="forumBox"></div>
+</section>
+
+<!-- ============ VUE : MESSAGERIE INTER-RÔLES ============ -->
+<section class="view" id="view-messagerie" data-view="messagerie" hidden>
+  <header class="view-head"><div><h2 class="vh-title">Messagerie</h2>
+    <p class="vh-sub">Écrivez aux médecins et aux agents de première ligne — texte et pièces jointes, persistants en base.</p></div></header>
+  <div class="grid-row2" style="grid-template-columns:1fr 1.6fr">
+    {% include "partials/messaging/_thread_list.html" %}
+    {% include "partials/messaging/_chat.html" %}
+  </div>
+</section>
+
+{% include "accounts/_profile_compte.html" %}
+
+{% include "partials/csb/_modal_create.html" %}
+{% endblock %}
+
+{% block page_js %}
+<script src="{% static 'js/dashboards/pilotage.js' %}"></script>
+<script src="{% static 'js/dashboards/pilotage/messaging.js' %}"></script>
+<script src="{% static 'js/dashboards/regions.js' %}"></script>
+<script src="{% static 'js/dashboards/stats.js' %}"></script>
+<script src="{% static 'js/dashboards/surveillance.js' %}"></script>
+{% endblock %}
